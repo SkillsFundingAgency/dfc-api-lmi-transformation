@@ -46,6 +46,6 @@ variables:
 - name: apimProductName
   value: LMI
 - name: apimApiName
-  value: LMI Transformation API draft
+  value: LMI-Transformation-API-draft
 - name: SubscriptionPosturi
   value: https://$(FunctionAppName).$(FunctionAppDomain)/api/subscription
