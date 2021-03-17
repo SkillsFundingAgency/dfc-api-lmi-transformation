@@ -94,9 +94,6 @@ stages:
       SharedResourceGroup: $(SharedResourceGroup)
       ApimServiceName: $(ApimServiceName)
       ApimProductInstanceName: $(ApimProductInstanceName)
-      ApiName: $(ApiName)
-      ApiId: $(ApiId)
-      ApimLmiKey: "$(ApimLmiKey)"
       FunctionAppDomain: $(FunctionAppDomain)
       APIMPolicyPath: "$(Pipeline.Workspace)/${{ variables.SolutionBaseName }}.ApimPolicies/"
       ApimImportScript: "$(Pipeline.Workspace)/${{ variables.SolutionBaseName }}.Scripts/Import-ApimOpenApiDefinitionFromFile.ps1"
@@ -140,9 +137,6 @@ stages:
       SharedResourceGroup: $(SharedResourceGroup)
       ApimServiceName: $(ApimServiceName)
       ApimProductInstanceName: $(ApimProductInstanceName)
-      ApiName: $(ApiName)
-      ApiId: $(ApiId)
-      ApimLmiKey: "$(ApimLmiKey)"
       FunctionAppDomain: $(FunctionAppDomain)
       APIMPolicyPath: "$(Pipeline.Workspace)/${{ variables.SolutionBaseName }}.ApimPolicies/"
       ApimImportScript: "$(Pipeline.Workspace)/${{ variables.SolutionBaseName }}.Scripts/Import-ApimOpenApiDefinitionFromFile.ps1"
@@ -186,9 +180,6 @@ stages:
       SharedResourceGroup: $(SharedResourceGroup)
       ApimServiceName: $(ApimServiceName)
       ApimProductInstanceName: $(ApimProductInstanceName)
-      ApiName: $(ApiName)
-      ApiId: $(ApiId)
-      ApimLmiKey: "$(ApimLmiKey)"
       FunctionAppDomain: $(FunctionAppDomain)
       APIMPolicyPath: "$(Pipeline.Workspace)/${{ variables.SolutionBaseName }}.ApimPolicies/"
       ApimImportScript: "$(Pipeline.Workspace)/${{ variables.SolutionBaseName }}.Scripts/Import-ApimOpenApiDefinitionFromFile.ps1"
@@ -232,9 +223,6 @@ stages:
       SharedResourceGroup: $(SharedResourceGroup)
       ApimServiceName: $(ApimServiceName)
       ApimProductInstanceName: $(ApimProductInstanceName)
-      ApiName: $(ApiName)
-      ApiId: $(ApiId)
-      ApimLmiKey: "$(ApimLmiKey)"
       FunctionAppDomain: $(FunctionAppDomain)
       APIMPolicyPath: "$(Pipeline.Workspace)/${{ variables.SolutionBaseName }}.ApimPolicies/"
       ApimImportScript: "$(Pipeline.Workspace)/${{ variables.SolutionBaseName }}.Scripts/Import-ApimOpenApiDefinitionFromFile.ps1"

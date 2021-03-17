@@ -10,7 +10,6 @@ parameters:
   ApimApiName: ''
   SubscriptionPosturi: ''
   APIMPolicyPath: ''
-  ApiId: ''
 
 steps:
 - checkout: dfc-devops
