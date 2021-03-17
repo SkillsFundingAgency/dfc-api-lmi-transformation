@@ -49,3 +49,5 @@ variables:
   value: Transformation
 - name: SubscriptionPosturi
   value: https://$(FunctionAppName).$(FunctionAppDomain)/subscription/
+- name: FunctionAppUrl
+  value: https://$(FunctionAppName).$(FunctionAppDomain)

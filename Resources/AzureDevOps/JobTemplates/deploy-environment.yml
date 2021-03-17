@@ -76,3 +76,4 @@ jobs:
                 APIMApiName: '${{ parameters.ApimApiName }}'
                 SubscriptionPosturi: '${{ parameters.SubscriptionPosturi }}'
                 ApiId: '${{ parameters.ApiId  }}'
+                APIMPolicyPath: '${{ parameters.APIMPolicyPath  }}'
