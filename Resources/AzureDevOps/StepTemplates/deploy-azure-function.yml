@@ -71,14 +71,14 @@ steps:
   displayName: 'Tokenization: Transform file APIM Policy File'
   inputs:
     SourcePath: '${{ parameters.APIMPolicyPath }}'
-    TargetFileNames: 'ApimPolicy-IsolatedAppServiceAsEventGridWebhookEndpoint.xml'
+    TargetFileNames: 'ApimPolicy-IsolatedAzureFunctionAsEventGridWebhookEndpoint.xml'
 
 - task: AzurePowerShell@5
   displayName: 'Apply EventGrid APIM Policy'
   inputs:
     azureSubscription: '${{ parameters.AzureSubscription }}'
     ScriptPath: '$(Agent.BuildDirectory)/s/dfc-devops/PSCoreScripts/Set-ApimPolicy.ps1'
-    ScriptArguments: '-PolicyScope operation -ApimResourceGroup ${{ parameters.SharedResourceGroup }} -ApimServiceName ${{ parameters.ApimServiceName }} -PolicyFilePath "$(Agent.BuildDirectory)/dfc.api.lmi.transformation.apimpolicies/ApimPolicy-IsolatedAppServiceAsEventGridWebhookEndpoint.xml" -ApiId ${{ parameters.ApimProductName }}-${{ parameters.ApimApiName }} -OperationId post-api-webhook-receiveevents'
+    ScriptArguments: '-PolicyScope operation -ApimResourceGroup ${{ parameters.SharedResourceGroup }} -ApimServiceName ${{ parameters.ApimServiceName }} -PolicyFilePath "$(Agent.BuildDirectory)/dfc.api.lmi.transformation.apimpolicies/ApimPolicy-IsolatedAzureFunctionAsEventGridWebhookEndpoint.xml" -ApiId ${{ parameters.ApimProductName }}-${{ parameters.ApimApiName }} -OperationId post-api-webhook-receiveevents'
     azurePowerShellVersion: LatestVersion
 
 - task: AzurePowerShell@5
