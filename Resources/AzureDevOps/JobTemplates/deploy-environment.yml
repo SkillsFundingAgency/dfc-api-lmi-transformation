@@ -75,3 +75,4 @@ jobs:
                 APIMProductName: '${{ parameters.ApimProductName }}'
                 APIMApiName: '${{ parameters.ApimApiName }}'
                 SubscriptionPosturi: '${{ parameters.SubscriptionPosturi }}'
+                ApiId: '${{ parameters.ApiId  }}'
