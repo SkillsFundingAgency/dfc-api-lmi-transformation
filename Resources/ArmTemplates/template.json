@@ -318,7 +318,7 @@
               },
               {
                 "name": "ApiSuffix",
-                "value": "[if(contains(variables('resourcePrefix'),'draft'),'-draft','')]"
+                "value": "[if(contains(variables('resourcePrefix'),'draft'),'(draft)','')]"
               },
               {
                 "name": "Configuration__CosmosDbConnections__LmiTransformation__AccessKey",
