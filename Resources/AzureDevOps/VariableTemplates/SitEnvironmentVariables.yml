@@ -41,6 +41,8 @@ variables:
   value: LMI-logger
 - name: apimProductName
   value: LMI
+- name: ProductId
+  value: lmi
 - name: apimApiName
   value: Transformation
 - name: SubscriptionPosturi

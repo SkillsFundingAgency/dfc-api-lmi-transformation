@@ -7,6 +7,7 @@ parameters:
   SharedResourceGroup: ''
   ApimServiceName: ''
   ApimProductName: ''
+  ProductId: ''
   ApimApiName: ''
   SubscriptionPosturi: ''
   APIMPolicyPath: ''
@@ -74,6 +75,20 @@ steps:
     azureSubscription: '${{ parameters.AzureSubscription }}'
     ScriptPath: '$(Agent.BuildDirectory)/s/dfc-devops/PSCoreScripts/Set-ApimPolicy.ps1'
     ScriptArguments: '-PolicyScope operation -ApimResourceGroup ${{ parameters.SharedResourceGroup }} -ApimServiceName ${{ parameters.ApimServiceName }} -PolicyFilePath "$(Agent.BuildDirectory)/dfc.api.lmi.transformation.apimpolicies/ApimPolicy-IsolatedAzureFunctionAsEventGridWebhookEndpoint.xml" -ApiId ${{ parameters.ApimProductName }}-${{ parameters.ApimApiName }} -OperationId LMIWebhook'
+    azurePowerShellVersion: LatestVersion
+
+- task: esfadevops.Tokenization.custom-build-task.Tokenization@0
+  displayName: 'Tokenization: Transform file APIM Product Policy File'
+  inputs:
+    SourcePath: '${{ parameters.APIMPolicyPath }}'
+    TargetFileNames: 'ApimProductPolicy.xml'
+
+- task: AzurePowerShell@5
+  displayName: 'Apply APIM Product Policy'
+  inputs:
+    azureSubscription: '${{ parameters.AzureSubscription }}'
+    ScriptPath: '$(Agent.BuildDirectory)/s/dfc-devops/PSCoreScripts/Set-ApimPolicy.ps1'
+    ScriptArguments: '-PolicyScope product -ApimResourceGroup ${{ parameters.SharedResourceGroup }} -ApimServiceName ${{ parameters.ApimServiceName }} -PolicyFilePath "$(Agent.BuildDirectory)/dfc.api.lmi.transformation.apimpolicies/ApimProductPolicy.xml" -ProductId ${{ parameters.ProductId }}'
     azurePowerShellVersion: LatestVersion
 
 - task: AzurePowerShell@5

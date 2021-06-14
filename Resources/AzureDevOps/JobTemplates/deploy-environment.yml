@@ -13,6 +13,7 @@ parameters:
   AppServiceName: ''
   ApimLoggerName: ''
   ApimProductName: ''
+  ProductId: ''
   SharedResourceGroup: ''
   ApimServiceName: ''
   ApimProductInstanceName: ''
@@ -74,3 +75,4 @@ jobs:
                 APIMApiName: '${{ parameters.ApimApiName }}'
                 SubscriptionPosturi: '${{ parameters.SubscriptionPosturi }}'
                 APIMPolicyPath: '${{ parameters.APIMPolicyPath  }}'
+                ProductId: '${{ parameters.ProductId  }}'
