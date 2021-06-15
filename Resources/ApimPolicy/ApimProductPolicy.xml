@@ -11,6 +11,7 @@
         }</value>
     </set-header>
     <base />
+    <rate-limit calls="__RateLimitRequests__" renewal-period="__RateLimitRenewalPeriod__" />
   </inbound>
   <backend>
     <base />

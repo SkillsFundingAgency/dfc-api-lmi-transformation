@@ -43,6 +43,10 @@ variables:
   value: LMI
 - name: ProductId
   value: lmi
+- name: RateLimitRenewalPeriod
+  value: 1
+- name: RateLimitRequests
+  value: 1500
 - name: apimApiName
   value: Transformation-draft
 - name: SubscriptionPosturi
