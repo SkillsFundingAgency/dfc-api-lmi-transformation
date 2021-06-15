@@ -62,7 +62,7 @@ stages:
         DotNetCoreVersion: '3.1.100'
 
 - stage: DeployToDevLmiTransformation
-  #condition: and(succeeded(), eq(variables['Build.SourceBranch'], 'refs/heads/dev'))
+  condition: and(succeeded(), eq(variables['Build.SourceBranch'], 'refs/heads/dev'))
   displayName: Deploy to DEV_LMI_TRANSFORMATIONS
   variables:
   - group: dfc-shared-all
@@ -106,7 +106,7 @@ stages:
           - azureFunctionName: '${{ variables.FunctionAppName }}'
 
 - stage: DeployToDevDraftLmiTransformation
-  condition: and(succeeded(), eq(variables['Build.SourceBranch'], 'refs/heads/dev'))
+  condition: succeeded()
   displayName: Deploy to DEV-DRAFT_LMI_TRANSFORMATIONS
   variables:
   - group: dfc-shared-all
@@ -150,7 +150,7 @@ stages:
           - azureFunctionName: '${{ variables.FunctionAppName }}'
 
 - stage: DeployToSitLmiTransformation
-  condition: and(succeeded(), eq(variables['Build.SourceBranch'], 'refs/heads/dev'))
+  condition: succeeded()
   displayName: Deploy to SIT_LMI_TRANSFORMATIONS
   variables:
   - group: dfc-shared-all
