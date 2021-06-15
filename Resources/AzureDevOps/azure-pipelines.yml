@@ -267,6 +267,7 @@ stages:
       AppServiceName: '$(FunctionAppName)'
       ApimLoggerName: "$(ApimLoggerName)"
       ApimProductName: "$(ApimProductName)"
+      ProductId: "$(ProductId)"
       SharedResourceGroup: $(SharedResourceGroup)
       ApimServiceName: $(ApimServiceName)
       ApimProductInstanceName: $(ApimProductInstanceName)
@@ -310,6 +311,7 @@ stages:
       AppServiceName: '$(FunctionAppName)'
       ApimLoggerName: "$(ApimLoggerName)"
       ApimProductName: "$(ApimProductName)"
+      ProductId: "$(ProductId)"
       SharedResourceGroup: $(SharedResourceGroup)
       ApimServiceName: $(ApimServiceName)
       ApimProductInstanceName: $(ApimProductInstanceName)
@@ -353,6 +355,7 @@ stages:
       AppServiceName: '$(FunctionAppName)'
       ApimLoggerName: "$(ApimLoggerName)"
       ApimProductName: "$(ApimProductName)"
+      ProductId: "$(ProductId)"
       SharedResourceGroup: $(SharedResourceGroup)
       ApimServiceName: $(ApimServiceName)
       ApimProductInstanceName: $(ApimProductInstanceName)
@@ -396,6 +399,7 @@ stages:
       AppServiceName: '$(FunctionAppName)'
       ApimLoggerName: "$(ApimLoggerName)"
       ApimProductName: "$(ApimProductName)"
+      ProductId: "$(ProductId)"
       SharedResourceGroup: $(SharedResourceGroup)
       ApimServiceName: $(ApimServiceName)
       ApimProductInstanceName: $(ApimProductInstanceName)
