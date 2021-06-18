@@ -46,7 +46,7 @@ variables:
 - name: RateLimitRenewalPeriod
   value: 1
 - name: RateLimitRequests
-  value: 1500
+  value: 3000
 - name: apimApiName
   value: Transformation
 - name: SubscriptionPosturi
