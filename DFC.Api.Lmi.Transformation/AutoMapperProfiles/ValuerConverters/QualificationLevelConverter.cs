@@ -45,7 +45,7 @@ namespace DFC.Api.Lmi.Transformation.AutoMapperProfiles.ValuerConverters
 
                 if (firstYearResult != null)
                 {
-                    var maxEmploymentBreakdown = firstYearResult.Breakdown.OrderByDescending(o => o.Employment).First();
+                    var maxEmploymentBreakdown = firstYearResult.Breakdown?.OrderByDescending(o => o.Employment).FirstOrDefault();
 
                     if (maxEmploymentBreakdown != null)
                     {

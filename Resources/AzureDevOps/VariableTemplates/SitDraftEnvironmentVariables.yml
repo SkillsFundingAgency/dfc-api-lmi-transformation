@@ -41,6 +41,12 @@ variables:
   value: LMI-logger
 - name: apimProductName
   value: LMI
+- name: ProductId
+  value: lmi
+- name: RateLimitRenewalPeriod
+  value: 1
+- name: RateLimitRequests
+  value: 3000
 - name: apimApiName
   value: Transformation-draft
 - name: SubscriptionPosturi

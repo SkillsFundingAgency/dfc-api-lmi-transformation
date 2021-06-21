@@ -91,6 +91,7 @@ stages:
       AppServiceName: '$(FunctionAppName)'
       ApimLoggerName: "$(ApimLoggerName)"
       ApimProductName: "$(ApimProductName)"
+      ProductId: "$(ProductId)"
       SharedResourceGroup: $(SharedResourceGroup)
       ApimServiceName: $(ApimServiceName)
       ApimProductInstanceName: $(ApimProductInstanceName)
@@ -137,6 +138,7 @@ stages:
       SharedResourceGroup: $(SharedResourceGroup)
       ApimServiceName: $(ApimServiceName)
       ApimProductInstanceName: $(ApimProductInstanceName)
+      ProductId: "$(ProductId)"
       FunctionAppDomain: $(FunctionAppDomain)
       APIMPolicyPath: "$(Pipeline.Workspace)/${{ variables.SolutionBaseName }}.ApimPolicies/"
       ApimImportScript: "$(Pipeline.Workspace)/${{ variables.SolutionBaseName }}.Scripts/Import-ApimOpenApiDefinitionFromFile.ps1"
@@ -177,6 +179,7 @@ stages:
       AppServiceName: '$(FunctionAppName)'
       ApimLoggerName: "$(ApimLoggerName)"
       ApimProductName: "$(ApimProductName)"
+      ProductId: "$(ProductId)"
       SharedResourceGroup: $(SharedResourceGroup)
       ApimServiceName: $(ApimServiceName)
       ApimProductInstanceName: $(ApimProductInstanceName)
@@ -220,6 +223,7 @@ stages:
       AppServiceName: '$(FunctionAppName)'
       ApimLoggerName: "$(ApimLoggerName)"
       ApimProductName: "$(ApimProductName)"
+      ProductId: "$(ProductId)"
       SharedResourceGroup: $(SharedResourceGroup)
       ApimServiceName: $(ApimServiceName)
       ApimProductInstanceName: $(ApimProductInstanceName)
@@ -263,6 +267,7 @@ stages:
       AppServiceName: '$(FunctionAppName)'
       ApimLoggerName: "$(ApimLoggerName)"
       ApimProductName: "$(ApimProductName)"
+      ProductId: "$(ProductId)"
       SharedResourceGroup: $(SharedResourceGroup)
       ApimServiceName: $(ApimServiceName)
       ApimProductInstanceName: $(ApimProductInstanceName)
@@ -306,6 +311,7 @@ stages:
       AppServiceName: '$(FunctionAppName)'
       ApimLoggerName: "$(ApimLoggerName)"
       ApimProductName: "$(ApimProductName)"
+      ProductId: "$(ProductId)"
       SharedResourceGroup: $(SharedResourceGroup)
       ApimServiceName: $(ApimServiceName)
       ApimProductInstanceName: $(ApimProductInstanceName)
@@ -349,6 +355,7 @@ stages:
       AppServiceName: '$(FunctionAppName)'
       ApimLoggerName: "$(ApimLoggerName)"
       ApimProductName: "$(ApimProductName)"
+      ProductId: "$(ProductId)"
       SharedResourceGroup: $(SharedResourceGroup)
       ApimServiceName: $(ApimServiceName)
       ApimProductInstanceName: $(ApimProductInstanceName)
@@ -392,6 +399,7 @@ stages:
       AppServiceName: '$(FunctionAppName)'
       ApimLoggerName: "$(ApimLoggerName)"
       ApimProductName: "$(ApimProductName)"
+      ProductId: "$(ProductId)"
       SharedResourceGroup: $(SharedResourceGroup)
       ApimServiceName: $(ApimServiceName)
       ApimProductInstanceName: $(ApimProductInstanceName)
