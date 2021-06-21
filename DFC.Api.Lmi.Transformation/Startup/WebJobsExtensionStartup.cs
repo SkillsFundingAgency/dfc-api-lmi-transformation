@@ -10,6 +10,7 @@ using DFC.Compui.Cosmos.Contracts;
 using DFC.Compui.Subscriptions.Pkg.Netstandard.Extensions;
 using DFC.Content.Pkg.Netcore.Extensions;
 using DFC.Swagger.Standard;
+using Microsoft.Azure.Documents.Client;
 using Microsoft.Azure.WebJobs;
 using Microsoft.Azure.WebJobs.Hosting;
 using Microsoft.Extensions.Configuration;
@@ -38,6 +39,7 @@ namespace DFC.Api.Lmi.Transformation.Startup
                 .Build();
 
             var cosmosDbConnection = configuration.GetSection(CosmosDbLmiTransformationConfigAppSettings).Get<CosmosDbConnection>();
+            var cosmosRetryOptions = new RetryOptions { MaxRetryAttemptsOnThrottledRequests = 20, MaxRetryWaitTimeInSeconds = 60 };
 
             builder.Services.AddSingleton(configuration.GetSection(nameof(EventGridClientOptions)).Get<EventGridClientOptions>() ?? new EventGridClientOptions());
 
@@ -45,7 +47,7 @@ namespace DFC.Api.Lmi.Transformation.Startup
             builder.Services.AddHttpClient();
             builder.Services.AddApplicationInsightsTelemetry();
             builder.Services.AddAutoMapper(typeof(WebJobsExtensionStartup).Assembly);
-            builder.Services.AddDocumentServices<JobGroupModel>(cosmosDbConnection, false);
+            builder.Services.AddDocumentServices<JobGroupModel>(cosmosDbConnection, false, cosmosRetryOptions);
             builder.Services.AddSubscriptionService(configuration);
             builder.Services.AddSingleton(new EnvironmentValues());
             builder.Services.AddTransient<ISwaggerDocumentGenerator, SwaggerDocumentGenerator>();
