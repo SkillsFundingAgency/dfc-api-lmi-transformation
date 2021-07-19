@@ -150,7 +150,8 @@ stages:
           - azureFunctionName: '${{ variables.FunctionAppName }}'
 
 - stage: DeployToDevLmiTransformation
-  condition: succeeded()
+  dependsOn: Build
+  condition: and(succeeded(), eq(variables['Build.SourceBranch'], 'refs/heads/dev'))
   displayName: Deploy to DEV_LMI_TRANSFORMATIONS
   variables:
   - group: dfc-shared-all
