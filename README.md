@@ -16,18 +16,18 @@ Clone the project and open the solution in Visual Studio 2019.
 
 |Item	|Purpose|
 |-------|-------|
-DFC.Compui.Cosmos | Cosmos repository nuget |
-DFC.Content.Pkg.Netcore | Content API client nuget |
-DFC.Compui.Subscriptions | Composite UI Subscription API client |
+DFC.Compui.Cosmos|Cosmos repository nuget|
+DFC.Content.Pkg.Netcore|Content API client nuget|
+DFC.Compui.Subscriptions|Composite UI Subscription API client|
 
 
 ## Local Config Files
 
 Once you have cloned the public repo you need to remove the -template part from the configuration file names listed below.
 
-| Location | Filename | Rename to |
-|-------|-------|-------|
-| DFC.Api.Lmi.Transformation |local.settings-template.json | local.settings.json |
+|Location|Filename|Rename to|
+|--------|--------|---------|
+|DFC.Api.Lmi.Transformation|local.settings-template.json|local.settings.json|
 
 ## Configuring to run locally
 
@@ -41,25 +41,25 @@ This app also subscribes to change events in Event Grid. To make use of it you w
 
 ## App Settings
 
-| App setting | Value |
-|-------|-------|
-ApiSuffix | dev |
-Configuration__CosmosDbConnections__LmiTransformation__AccessKey | __CosmosAccessKey__ |
-Configuration__CosmosDbConnections__LmiTransformation__EndpointUrl | __CosmosEndpoint__ |
-Configuration__CosmosDbConnections__LmiTransformation__DatabaseId | dfc-api-lmi-transformation |
-Configuration__CosmosDbConnections__LmiTransformation__CollectionId | job-groups |
-Configuration__CosmosDbConnections__LmiTransformation__PartitionKey | /PartitionKey |
-CmsApiClientOptions__BaseAddress | https://dfc-dev-api-cont-fa.azurewebsites.net/api/execute/ |
-CmsApiClientOptions__SummaryEndpoint | lmisoc |
-SubscriptionSettings__Endpoint | __ThisFunctionAppBaseAddress__/lmi/webhook |
-SubscriptionSettings__SubscriptionServiceEndpoint | __SubscriptionServiceEndpoint__ |
-SubscriptionSettings__ApiKey | __SubscriptionServiceApimKey__ |
-SubscriptionSettings__Filter__BeginsWith | /dfc-api-lmi-import/ |
-SubscriptionSettings__Filter__IncludeEventTypes__0 | published |
-EventGridClientOptions__TopicEndpoint | Event grid topic endpoint |
-EventGridClientOptions__SubjectPrefix | Message subject prefix |
-EventGridClientOptions__TopicKey | Event grid topic key |
-EventGridClientOptions__ApiEndpoint | Content API endpoint |
+|App setting|Value|
+|-----------|-----|
+|ApiSuffix|dev|
+|Configuration__CosmosDbConnections__LmiTransformation__AccessKey|__CosmosAccessKey__|
+|Configuration__CosmosDbConnections__LmiTransformation__EndpointUrl|__CosmosEndpoint__|
+|Configuration__CosmosDbConnections__LmiTransformation__DatabaseId|dfc-api-lmi-transformation|
+|Configuration__CosmosDbConnections__LmiTransformation__CollectionId|job-groups|
+|Configuration__CosmosDbConnections__LmiTransformation__PartitionKey|/PartitionKey|
+|CmsApiClientOptions__BaseAddress|__ContentApiEndpoint__/api/execute/|
+|CmsApiClientOptions__SummaryEndpoint|lmisoc|
+|SubscriptionSettings__Endpoint|__ThisFunctionAppBaseAddress__/lmi/webhook|
+|SubscriptionSettings__SubscriptionServiceEndpoint|__SubscriptionServiceEndpoint__|
+|SubscriptionSettings__ApiKey|__SubscriptionServiceApimKey__|
+|SubscriptionSettings__Filter__BeginsWith|/dfc-api-lmi-import/|
+|SubscriptionSettings__Filter__IncludeEventTypes__0|published|
+|EventGridClientOptions__TopicEndpoint|Event grid topic endpoint|
+|EventGridClientOptions__SubjectPrefix|Message subject prefix|
+|EventGridClientOptions__TopicKey|Event grid topic key|
+|EventGridClientOptions__ApiEndpoint|Content API endpoint|
 
 ## Running locally
 
