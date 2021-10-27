@@ -34,6 +34,8 @@ namespace DFC.Api.Lmi.Transformation.Models.JobGroupModels
 
         public JobGrowthPredictionModel? JobGrowth { get; set; }
 
+        public ReplacementDemandModel? ReplacementDemand { get; set; }
+
         public QualificationLevelModel? QualificationLevel { get; set; }
 
         public IList<BreakdownModel>? EmploymentByRegion { get; set; }

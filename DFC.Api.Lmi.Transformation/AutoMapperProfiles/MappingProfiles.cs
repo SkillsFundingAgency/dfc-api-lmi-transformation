@@ -20,6 +20,7 @@ namespace DFC.Api.Lmi.Transformation.AutoMapperProfiles
                 .ForMember(d => d.TransformedDate, s => s.Ignore())
                 .ForMember(d => d.JobProfiles, opt => opt.ConvertUsing(new JobProfileListConverter(), a => a.ContentItems))
                 .ForMember(d => d.JobGrowth, opt => opt.ConvertUsing(new JobGrowthConverter(), a => a.ContentItems))
+                .ForMember(d => d.ReplacementDemand, opt => opt.ConvertUsing(new ReplacementDemandConverter(), a => a.ContentItems))
                 .ForMember(d => d.QualificationLevel, opt => opt.ConvertUsing(new QualificationLevelConverter(), a => a.ContentItems))
                 .ForMember(d => d.EmploymentByRegion, opt => opt.ConvertUsing(new EmploymentByRegionConverter(), a => a.ContentItems))
                 .ForMember(d => d.TopIndustriesInJobGroup, opt => opt.ConvertUsing(new TopIndustriesInJobGroupConverter(), a => a.ContentItems));
@@ -40,6 +41,16 @@ namespace DFC.Api.Lmi.Transformation.AutoMapperProfiles
             CreateMap<LmiSocBreakdownYearValue, BreakdownYearValueModel>();
 
             CreateMap<LinkDetails, LmiSocJobProfile>()
+                .ForMember(d => d.Url, s => s.Ignore())
+                .ForMember(d => d.ItemId, s => s.Ignore())
+                .ForMember(d => d.Title, s => s.Ignore())
+                .ForMember(d => d.Published, s => s.Ignore())
+                .ForMember(d => d.CreatedDate, s => s.Ignore())
+                .ForMember(d => d.Links, s => s.Ignore())
+                .ForMember(d => d.ContentLinks, s => s.Ignore())
+                .ForMember(d => d.ContentItems, s => s.Ignore());
+
+            CreateMap<LinkDetails, LmiSocReplacementDemand>()
                 .ForMember(d => d.Url, s => s.Ignore())
                 .ForMember(d => d.ItemId, s => s.Ignore())
                 .ForMember(d => d.Title, s => s.Ignore())
