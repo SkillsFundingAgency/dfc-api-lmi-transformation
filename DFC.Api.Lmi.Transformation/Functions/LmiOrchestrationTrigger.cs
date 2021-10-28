@@ -52,6 +52,7 @@ namespace DFC.Api.Lmi.Transformation.Functions
 
             contentTypeMappingService.AddMapping(nameof(LmiSocJobProfile), typeof(LmiSocJobProfile));
             contentTypeMappingService.AddMapping(nameof(LmiSocPredicted), typeof(LmiSocPredicted));
+            contentTypeMappingService.AddMapping(nameof(LmiSocReplacementDemand), typeof(LmiSocReplacementDemand));
             contentTypeMappingService.AddMapping(nameof(LmiSocPredictedYear), typeof(LmiSocPredictedYear));
             contentTypeMappingService.AddMapping(nameof(LmiSocBreakdown), typeof(LmiSocBreakdown));
             contentTypeMappingService.AddMapping(nameof(LmiSocBreakdownYear), typeof(LmiSocBreakdownYear));
