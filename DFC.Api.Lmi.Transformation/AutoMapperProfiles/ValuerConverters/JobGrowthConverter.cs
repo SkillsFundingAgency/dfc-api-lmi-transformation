@@ -43,7 +43,6 @@ namespace DFC.Api.Lmi.Transformation.AutoMapperProfiles.ValuerConverters
                         }
 
                         break;
-
                 }
             }
 
