@@ -57,13 +57,13 @@ namespace DFC.Api.Lmi.Transformation.AutoMapperProfiles.ValuerConverters
                 {
                     StartYearRange = firstYearPredictedEmployment.Year,
                     EndYearRange = lastYearPredictedEmployment.Year,
-                    JobsCreated = lastYearPredictedEmployment.Employment - firstYearPredictedEmployment.Employment,
+                    JobsCreated = RoundToNearest(lastYearPredictedEmployment.Employment - firstYearPredictedEmployment.Employment, 100),
                     PercentageGrowth = (lastYearPredictedEmployment.Employment - firstYearPredictedEmployment.Employment) / firstYearPredictedEmployment.Employment * 100,
                 };
 
                 if (lmiSocReplacementDemand != null)
                 {
-                    result.Retirements = lmiSocReplacementDemand.Rate;
+                    result.Retirements = RoundToNearest(lmiSocReplacementDemand.Rate, 100);
                     result.PercentageRetirements = lmiSocReplacementDemand.Rate / firstYearPredictedEmployment.Employment * 100;
                 }
 
@@ -71,6 +71,12 @@ namespace DFC.Api.Lmi.Transformation.AutoMapperProfiles.ValuerConverters
             }
 
             return default;
+        }
+
+        private static int RoundToNearest(decimal input, int nearest)
+        {
+            decimal result = Math.Round(input / nearest, 0, MidpointRounding.AwayFromZero) * nearest;
+            return (int)result;
         }
     }
 }
