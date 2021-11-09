@@ -49,6 +49,16 @@ namespace DFC.Api.Lmi.Transformation.AutoMapperProfiles
                 .ForMember(d => d.ContentLinks, s => s.Ignore())
                 .ForMember(d => d.ContentItems, s => s.Ignore());
 
+            CreateMap<LinkDetails, LmiSocReplacementDemand>()
+                .ForMember(d => d.Url, s => s.Ignore())
+                .ForMember(d => d.ItemId, s => s.Ignore())
+                .ForMember(d => d.Title, s => s.Ignore())
+                .ForMember(d => d.Published, s => s.Ignore())
+                .ForMember(d => d.CreatedDate, s => s.Ignore())
+                .ForMember(d => d.Links, s => s.Ignore())
+                .ForMember(d => d.ContentLinks, s => s.Ignore())
+                .ForMember(d => d.ContentItems, s => s.Ignore());
+
             CreateMap<LinkDetails, LmiSocPredicted>()
                 .ForMember(d => d.Url, s => s.Ignore())
                 .ForMember(d => d.ItemId, s => s.Ignore())

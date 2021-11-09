@@ -9,8 +9,12 @@ namespace DFC.Api.Lmi.Transformation.Models.JobGroupModels
 
         public int EndYearRange { get; set; }
 
-        public decimal JobsCreated { get; set; }
+        public int JobsCreated { get; set; }
 
         public decimal PercentageGrowth { get; set; }
+
+        public int? Retirements { get; set; }
+
+        public decimal? PercentageRetirements { get; set; }
     }
 }
