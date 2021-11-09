@@ -1,4 +1,5 @@
 ﻿using AutoMapper;
+using DFC.Api.Lmi.Transformation.Extensions;
 using DFC.Api.Lmi.Transformation.Models.ContentApiModels;
 using DFC.Api.Lmi.Transformation.Models.JobGroupModels;
 using DFC.Content.Pkg.Netcore.Data.Contracts;
@@ -21,7 +22,8 @@ namespace DFC.Api.Lmi.Transformation.AutoMapperProfiles.ValuerConverters
                 return default;
             }
 
-            var results = new List<PredictedModel>();
+            var predictedList = new List<PredictedModel>();
+            var replacementDemandList = new List<LmiSocReplacementDemand>();
 
             foreach (var item in sourceMember)
             {
@@ -30,31 +32,43 @@ namespace DFC.Api.Lmi.Transformation.AutoMapperProfiles.ValuerConverters
                     case nameof(LmiSocPredicted):
                         if (item is LmiSocPredicted lmiSocPredicted)
                         {
-                            results.Add(context.Mapper.Map<PredictedModel>(lmiSocPredicted));
+                            predictedList.Add(context.Mapper.Map<PredictedModel>(lmiSocPredicted));
+                        }
+
+                        break;
+
+                    case nameof(LmiSocReplacementDemand):
+                        if (item is LmiSocReplacementDemand contentItem)
+                        {
+                            replacementDemandList.Add(context.Mapper.Map<LmiSocReplacementDemand>(contentItem));
                         }
 
                         break;
                 }
             }
 
-            var predictedEmployment = results.FirstOrDefault()?.PredictedEmployment;
-            if (predictedEmployment != null)
+            var predictedEmployment = predictedList.FirstOrDefault()?.PredictedEmployment;
+            var firstYearPredictedEmployment = predictedEmployment?.OrderBy(o => o.Year).FirstOrDefault();
+            var lastYearPredictedEmployment = predictedEmployment?.OrderByDescending(o => o.Year).FirstOrDefault();
+            var lmiSocReplacementDemand = replacementDemandList?.OrderBy(o => o.StartYear).FirstOrDefault();
+
+            if (firstYearPredictedEmployment != null && lastYearPredictedEmployment != null)
             {
-                var firstYearResult = predictedEmployment.OrderBy(o => o.Year).FirstOrDefault();
-                var lastYearResult = predictedEmployment.OrderByDescending(o => o.Year).FirstOrDefault();
-
-                if (firstYearResult != null && lastYearResult != null)
+                var result = new JobGrowthPredictionModel()
                 {
-                    var result = new JobGrowthPredictionModel()
-                    {
-                        StartYearRange = firstYearResult.Year,
-                        EndYearRange = lastYearResult.Year,
-                        JobsCreated = lastYearResult.Employment - firstYearResult.Employment,
-                        PercentageGrowth = (lastYearResult.Employment - firstYearResult.Employment) / firstYearResult.Employment * 100,
-                    };
+                    StartYearRange = firstYearPredictedEmployment.Year,
+                    EndYearRange = lastYearPredictedEmployment.Year,
+                    JobsCreated = (lastYearPredictedEmployment.Employment - firstYearPredictedEmployment.Employment).RoundToNearest(100),
+                    PercentageGrowth = (lastYearPredictedEmployment.Employment - firstYearPredictedEmployment.Employment) / firstYearPredictedEmployment.Employment * 100,
+                };
 
-                    return result;
+                if (lmiSocReplacementDemand != null)
+                {
+                    result.Retirements = lmiSocReplacementDemand.Rate.RoundToNearest(100);
+                    result.PercentageRetirements = lmiSocReplacementDemand.Rate / firstYearPredictedEmployment.Employment * 100;
                 }
+
+                return result;
             }
 
             return default;

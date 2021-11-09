@@ -1,8 +1,8 @@
 variables:
 - name: ReleaseEnvironmentName
-  value: PP-DRAFT
+  value: LAB
 - name: WebAppPrefix
-  value: dfc-pp-draft-api-lmi-transformation
+  value: dfc-lab-api-lmi-transformation
 - name: ResourceGroup
   value: $(WebAppPrefix)-rg
 - name: aspTier
@@ -10,9 +10,9 @@ variables:
 - name: aspInstances
   value: 2
 - name: aspSize
-  value: 1
+  value: 2
 - name: lmiTransformationAppDatabaseThroughput
-  value: 800
+  value: 400
 - name: ExceptionCountThreshold
   value: 10
 - name: MemoryPercentageThreshold
@@ -22,13 +22,13 @@ variables:
 - name: EnableAzureMonitorAlerting
   value: true
 - name: cosmosJobGroupDbCollectionName
-  value: job-groups-draft
+  value: job-groups
 - name: contentUrl
-  value: $(ContentApiDraftAddress)/api/execute/
+  value: $(ContentApiAddress)/api/execute/
 - name: SubscriptionSettingsEndpoint
-  value: $(ApimProxyAddress)/LMI/Transformation-draft/lmi/webhook?subscription-key=$(apimLmiKey)
+  value: $(ApimProxyAddress)/LMI/Transformation/lmi/webhook?subscription-key=$(apimLmiKey)
 - name: subscriptionUrl
-  value: https://dfc-pp-api-eventgridsubscriptions-fa.$(FunctionAppDomain)/api/execute/
+  value: https://dfc-lab-api-eventgridsubscriptions-fa.$(FunctionAppDomain)/api/execute/
 - name: EventGridPublishClientOptionsApiEndpoint
   value: https://$(FunctionAppName).$(FunctionAppDomain)/job-groups
 - name: EventGridSubjectPrefix
@@ -48,7 +48,7 @@ variables:
 - name: RateLimitRequests
   value: 3000
 - name: apimApiName
-  value: Transformation-draft
+  value: Transformation
 - name: SubscriptionPosturi
   value: https://$(FunctionAppName).$(FunctionAppDomain)/subscription/
 - name: FunctionAppUrl
