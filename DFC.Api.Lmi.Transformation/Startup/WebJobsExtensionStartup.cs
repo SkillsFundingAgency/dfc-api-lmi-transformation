@@ -1,14 +1,15 @@
-﻿using AutoMapper;
-using AzureFunctions.Extensions.Swashbuckle;
+﻿using AzureFunctions.Extensions.Swashbuckle;
+using DFC.Api.Lmi.Transformation.Connectors;
 using DFC.Api.Lmi.Transformation.Contracts;
-using DFC.Api.Lmi.Transformation.Models;
+using DFC.Api.Lmi.Transformation.Extensions;
+using DFC.Api.Lmi.Transformation.HttpClientPolicies;
+using DFC.Api.Lmi.Transformation.Models.ClientOptions;
 using DFC.Api.Lmi.Transformation.Models.JobGroupModels;
 using DFC.Api.Lmi.Transformation.Services;
 using DFC.Api.Lmi.Transformation.Startup;
 using DFC.Compui.Cosmos;
 using DFC.Compui.Cosmos.Contracts;
 using DFC.Compui.Subscriptions.Pkg.Netstandard.Extensions;
-using DFC.Content.Pkg.Netcore.Extensions;
 using DFC.Swagger.Standard;
 using Microsoft.Azure.Documents.Client;
 using Microsoft.Azure.WebJobs;
@@ -26,6 +27,7 @@ namespace DFC.Api.Lmi.Transformation.Startup
     [ExcludeFromCodeCoverage]
     public class WebJobsExtensionStartup : IWebJobsStartup
     {
+        private const string AppSettingsPolicies = "Policies";
         private const string CosmosDbLmiTransformationConfigAppSettings = "Configuration:CosmosDbConnections:LmiTransformation";
 
         public void Configure(IWebJobsBuilder builder)
@@ -49,15 +51,21 @@ namespace DFC.Api.Lmi.Transformation.Startup
             builder.Services.AddAutoMapper(typeof(WebJobsExtensionStartup).Assembly);
             builder.Services.AddDocumentServices<JobGroupModel>(cosmosDbConnection, false, cosmosRetryOptions);
             builder.Services.AddSubscriptionService(configuration);
-            builder.Services.AddSingleton(new EnvironmentValues());
             builder.Services.AddTransient<ISwaggerDocumentGenerator, SwaggerDocumentGenerator>();
             builder.Services.AddTransient<ILmiWebhookReceiverService, LmiWebhookReceiverService>();
             builder.Services.AddTransient<IEventGridService, EventGridService>();
             builder.Services.AddTransient<IEventGridClientService, EventGridClientService>();
+            builder.Services.AddTransient<IApiConnector, ApiConnector>();
+            builder.Services.AddTransient<IApiDataConnector, ApiDataConnector>();
 
+            var policyOptions = configuration.GetSection(AppSettingsPolicies).Get<PolicyOptions>() ?? new PolicyOptions();
             var policyRegistry = builder.Services.AddPolicyRegistry();
 
-            builder.Services.AddApiServices(configuration, policyRegistry);
+            builder.Services.AddSingleton(configuration.GetSection(nameof(LmiImportApiClientOptions)).Get<LmiImportApiClientOptions>() ?? new LmiImportApiClientOptions());
+
+            builder.Services
+                .AddPolicies(policyRegistry, nameof(LmiImportApiClientOptions), policyOptions)
+                .AddHttpClient<ILmiImportApiConnector, LmiImportApiConnector, LmiImportApiClientOptions>(nameof(LmiImportApiClientOptions), nameof(PolicyOptions.HttpRetry), nameof(PolicyOptions.HttpCircuitBreaker));
         }
     }
 }

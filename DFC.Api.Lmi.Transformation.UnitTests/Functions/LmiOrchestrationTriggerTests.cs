@@ -2,11 +2,11 @@
 using DFC.Api.Lmi.Transformation.Contracts;
 using DFC.Api.Lmi.Transformation.Functions;
 using DFC.Api.Lmi.Transformation.Models;
-using DFC.Api.Lmi.Transformation.Models.ContentApiModels;
+using DFC.Api.Lmi.Transformation.Models.ClientOptions;
 using DFC.Api.Lmi.Transformation.Models.FunctionRequestModels;
 using DFC.Api.Lmi.Transformation.Models.JobGroupModels;
+using DFC.Api.Lmi.Transformation.Models.LmiImportApiModels;
 using DFC.Compui.Cosmos.Contracts;
-using DFC.Content.Pkg.Netcore.Data.Contracts;
 using FakeItEasy;
 using Microsoft.Azure.WebJobs.Extensions.DurableTask;
 using Microsoft.Extensions.Logging;
@@ -24,8 +24,7 @@ namespace DFC.Api.Lmi.Transformation.UnitTests.Functions
     {
         private readonly ILogger<LmiOrchestrationTrigger> fakeLogger = A.Fake<ILogger<LmiOrchestrationTrigger>>();
         private readonly IMapper fakeMapper = A.Fake<IMapper>();
-        private readonly IContentTypeMappingService fakeContentTypeMappingService = A.Fake<IContentTypeMappingService>();
-        private readonly ICmsApiService fakeCmsApiService = A.Fake<ICmsApiService>();
+        private readonly ILmiImportApiConnector fakeLmiImportApiConnector = A.Fake<ILmiImportApiConnector>();
         private readonly IDocumentService<JobGroupModel> fakeJobGroupDocumentService = A.Fake<IDocumentService<JobGroupModel>>();
         private readonly IEventGridService fakeEventGridService = A.Fake<IEventGridService>();
         private readonly EventGridClientOptions dummyEventGridClientOptions = A.Dummy<EventGridClientOptions>();
@@ -34,7 +33,7 @@ namespace DFC.Api.Lmi.Transformation.UnitTests.Functions
 
         public LmiOrchestrationTriggerTests()
         {
-            lmiOrchestrationTrigger = new LmiOrchestrationTrigger(fakeLogger, fakeMapper, fakeContentTypeMappingService, fakeCmsApiService, fakeJobGroupDocumentService, fakeEventGridService, dummyEventGridClientOptions);
+            lmiOrchestrationTrigger = new LmiOrchestrationTrigger(fakeLogger, fakeMapper, fakeLmiImportApiConnector, fakeJobGroupDocumentService, fakeEventGridService, dummyEventGridClientOptions);
         }
 
         [Theory]
@@ -52,7 +51,6 @@ namespace DFC.Api.Lmi.Transformation.UnitTests.Functions
 
             // Assert
             A.CallTo(() => fakeDurableOrchestrationContext.GetInput<SocRequestModel>()).MustHaveHappenedOnceExactly();
-            A.CallTo(() => fakeDurableOrchestrationContext.CallActivityAsync(nameof(LmiOrchestrationTrigger.PurgeSocActivity), A<Guid>.Ignored)).MustHaveHappenedOnceExactly();
             A.CallTo(() => fakeDurableOrchestrationContext.CallActivityAsync<HttpStatusCode>(nameof(LmiOrchestrationTrigger.TransformItemActivity), A<Uri>.Ignored)).MustHaveHappenedOnceExactly();
             A.CallTo(() => fakeDurableOrchestrationContext.CallActivityAsync(nameof(LmiOrchestrationTrigger.PostTransformationEventActivity), A<EventGridPostRequestModel>.Ignored)).MustHaveHappenedOnceExactly();
             Assert.Equal(expectedResult, result);
@@ -72,7 +70,6 @@ namespace DFC.Api.Lmi.Transformation.UnitTests.Functions
 
             // Assert
             A.CallTo(() => fakeDurableOrchestrationContext.GetInput<SocRequestModel>()).MustHaveHappenedOnceExactly();
-            A.CallTo(() => fakeDurableOrchestrationContext.CallActivityAsync(nameof(LmiOrchestrationTrigger.PurgeSocActivity), A<Guid>.Ignored)).MustHaveHappenedOnceExactly();
             A.CallTo(() => fakeDurableOrchestrationContext.CallActivityAsync<HttpStatusCode>(nameof(LmiOrchestrationTrigger.TransformItemActivity), A<Uri>.Ignored)).MustHaveHappenedOnceExactly();
             A.CallTo(() => fakeDurableOrchestrationContext.CallActivityAsync(nameof(LmiOrchestrationTrigger.PostTransformationEventActivity), A<EventGridPostRequestModel>.Ignored)).MustNotHaveHappened();
             Assert.Equal(expectedResult, result);
@@ -113,16 +110,16 @@ namespace DFC.Api.Lmi.Transformation.UnitTests.Functions
         {
             // Arrange
             const int summariesCount = 2;
-            var dummySummaries = A.CollectionOfDummy<SummaryItem>(summariesCount);
-            A.CallTo(() => fakeDurableOrchestrationContext.GetInput<SocRequestModel>()).Returns(new SocRequestModel { SocId = Guid.NewGuid() });
-            A.CallTo(() => fakeDurableOrchestrationContext.CallActivityAsync<IList<SummaryItem>>(nameof(LmiOrchestrationTrigger.GetGraphSummaryItemsActivity), A<object>.Ignored)).Returns(dummySummaries);
+            var dummySummaries = A.CollectionOfDummy<SocDatasetSummaryItemModel>(summariesCount);
+            A.CallTo(() => fakeDurableOrchestrationContext.GetInput<SocRequestModel>()).Returns(new SocRequestModel { SocId = Guid.NewGuid(), Uri = new Uri("https://www.somehere.com", UriKind.Absolute) });
+            A.CallTo(() => fakeDurableOrchestrationContext.CallActivityAsync<IList<SocDatasetSummaryItemModel>>(nameof(LmiOrchestrationTrigger.GetSummaryItemsActivity), A<object>.Ignored)).Returns(dummySummaries);
 
             // Act
             await lmiOrchestrationTrigger.RefreshOrchestrator(fakeDurableOrchestrationContext).ConfigureAwait(false);
 
             // Assert
             A.CallTo(() => fakeDurableOrchestrationContext.GetInput<SocRequestModel>()).MustHaveHappenedOnceExactly();
-            A.CallTo(() => fakeDurableOrchestrationContext.CallActivityAsync<IList<SummaryItem>>(nameof(LmiOrchestrationTrigger.GetGraphSummaryItemsActivity), A<object>.Ignored)).MustHaveHappenedOnceExactly();
+            A.CallTo(() => fakeDurableOrchestrationContext.CallActivityAsync<IList<SocDatasetSummaryItemModel>>(nameof(LmiOrchestrationTrigger.GetSummaryItemsActivity), A<object>.Ignored)).MustHaveHappenedOnceExactly();
             A.CallTo(() => fakeDurableOrchestrationContext.CallActivityAsync(nameof(LmiOrchestrationTrigger.PurgeActivity), A<object>.Ignored)).MustHaveHappenedOnceExactly();
             A.CallTo(() => fakeDurableOrchestrationContext.CallActivityAsync<HttpStatusCode>(nameof(LmiOrchestrationTrigger.TransformItemActivity), A<Uri>.Ignored)).MustHaveHappened(summariesCount, Times.Exactly);
             A.CallTo(() => fakeDurableOrchestrationContext.CallActivityAsync(nameof(LmiOrchestrationTrigger.PostTransformationEventActivity), A<EventGridPostRequestModel>.Ignored)).MustHaveHappenedOnceExactly();
@@ -133,16 +130,16 @@ namespace DFC.Api.Lmi.Transformation.UnitTests.Functions
         {
             // Arrange
             const int summariesCount = 0;
-            var dummySummaries = A.CollectionOfDummy<SummaryItem>(summariesCount);
+            var dummySummaries = A.CollectionOfDummy<SocDatasetSummaryItemModel>(summariesCount);
             A.CallTo(() => fakeDurableOrchestrationContext.GetInput<SocRequestModel>()).Returns(new SocRequestModel { SocId = Guid.NewGuid() });
-            A.CallTo(() => fakeDurableOrchestrationContext.CallActivityAsync<IList<SummaryItem>>(nameof(LmiOrchestrationTrigger.GetGraphSummaryItemsActivity), A<object>.Ignored)).Returns(dummySummaries);
+            A.CallTo(() => fakeDurableOrchestrationContext.CallActivityAsync<IList<SocDatasetSummaryItemModel>>(nameof(LmiOrchestrationTrigger.GetSummaryItemsActivity), A<object>.Ignored)).Returns(dummySummaries);
 
             // Act
             await lmiOrchestrationTrigger.RefreshOrchestrator(fakeDurableOrchestrationContext).ConfigureAwait(false);
 
             // Assert
             A.CallTo(() => fakeDurableOrchestrationContext.GetInput<SocRequestModel>()).MustHaveHappenedOnceExactly();
-            A.CallTo(() => fakeDurableOrchestrationContext.CallActivityAsync<IList<SummaryItem>>(nameof(LmiOrchestrationTrigger.GetGraphSummaryItemsActivity), A<object>.Ignored)).MustHaveHappenedOnceExactly();
+            A.CallTo(() => fakeDurableOrchestrationContext.CallActivityAsync<IList<SocDatasetSummaryItemModel>>(nameof(LmiOrchestrationTrigger.GetSummaryItemsActivity), A<object>.Ignored)).MustHaveHappenedOnceExactly();
             A.CallTo(() => fakeDurableOrchestrationContext.CallActivityAsync(nameof(LmiOrchestrationTrigger.PurgeActivity), A<object>.Ignored)).MustNotHaveHappened();
             A.CallTo(() => fakeDurableOrchestrationContext.CallActivityAsync<HttpStatusCode>(nameof(LmiOrchestrationTrigger.TransformItemActivity), A<Uri>.Ignored)).MustNotHaveHappened();
             A.CallTo(() => fakeDurableOrchestrationContext.CallActivityAsync(nameof(LmiOrchestrationTrigger.PostTransformationEventActivity), A<EventGridPostRequestModel>.Ignored)).MustNotHaveHappened();
@@ -152,34 +149,34 @@ namespace DFC.Api.Lmi.Transformation.UnitTests.Functions
         public async Task LmiOrchestrationTriggerRefreshOrchestratorIsSuccessfulWhenNullData()
         {
             // Arrange
-            List<SummaryItem>? nullSummaries = null;
+            List<SocDatasetSummaryItemModel>? nullSummaries = null;
             A.CallTo(() => fakeDurableOrchestrationContext.GetInput<SocRequestModel>()).Returns(new SocRequestModel { SocId = Guid.NewGuid() });
-            A.CallTo(() => fakeDurableOrchestrationContext.CallActivityAsync<IList<SummaryItem>>(nameof(LmiOrchestrationTrigger.GetGraphSummaryItemsActivity), A<object>.Ignored)).Returns(nullSummaries);
+            A.CallTo(() => fakeDurableOrchestrationContext.CallActivityAsync<IList<SocDatasetSummaryItemModel>>(nameof(LmiOrchestrationTrigger.GetSummaryItemsActivity), A<object>.Ignored)).Returns(nullSummaries);
 
             // Act
             await lmiOrchestrationTrigger.RefreshOrchestrator(fakeDurableOrchestrationContext).ConfigureAwait(false);
 
             // Assert
             A.CallTo(() => fakeDurableOrchestrationContext.GetInput<SocRequestModel>()).MustHaveHappenedOnceExactly();
-            A.CallTo(() => fakeDurableOrchestrationContext.CallActivityAsync<IList<SummaryItem>>(nameof(LmiOrchestrationTrigger.GetGraphSummaryItemsActivity), A<object>.Ignored)).MustHaveHappenedOnceExactly();
+            A.CallTo(() => fakeDurableOrchestrationContext.CallActivityAsync<IList<SocDatasetSummaryItemModel>>(nameof(LmiOrchestrationTrigger.GetSummaryItemsActivity), A<object>.Ignored)).MustHaveHappenedOnceExactly();
             A.CallTo(() => fakeDurableOrchestrationContext.CallActivityAsync(nameof(LmiOrchestrationTrigger.PurgeActivity), A<object>.Ignored)).MustNotHaveHappened();
             A.CallTo(() => fakeDurableOrchestrationContext.CallActivityAsync<HttpStatusCode>(nameof(LmiOrchestrationTrigger.TransformItemActivity), A<Uri>.Ignored)).MustNotHaveHappened();
             A.CallTo(() => fakeDurableOrchestrationContext.CallActivityAsync(nameof(LmiOrchestrationTrigger.PostTransformationEventActivity), A<EventGridPostRequestModel>.Ignored)).MustNotHaveHappened();
         }
 
         [Fact]
-        public async Task LmiOrchestrationTriggerGetGraphSummaryItemsActivityIsSuccessful()
+        public async Task LmiOrchestrationTriggerGetSummaryItemsActivityIsSuccessful()
         {
             // Arrange
             const int summariesCount = 2;
-            var dummySummaries = A.CollectionOfDummy<SummaryItem>(summariesCount);
-            A.CallTo(() => fakeCmsApiService.GetSummaryAsync<SummaryItem>()).Returns(dummySummaries);
+            var dummySummaries = A.CollectionOfDummy<SocDatasetSummaryItemModel>(summariesCount);
+            A.CallTo(() => fakeLmiImportApiConnector.GetSummaryAsync(A<Uri>.Ignored)).Returns(dummySummaries);
 
             // Act
-            var results = await lmiOrchestrationTrigger.GetGraphSummaryItemsActivity(null).ConfigureAwait(false);
+            var results = await lmiOrchestrationTrigger.GetSummaryItemsActivity(new Uri("https://somewhere.com", UriKind.Absolute)).ConfigureAwait(false);
 
             // Assert
-            A.CallTo(() => fakeCmsApiService.GetSummaryAsync<SummaryItem>()).MustHaveHappenedOnceExactly();
+            A.CallTo(() => fakeLmiImportApiConnector.GetSummaryAsync(A<Uri>.Ignored)).MustHaveHappenedOnceExactly();
             Assert.Equal(dummySummaries, results);
         }
 
@@ -218,10 +215,10 @@ namespace DFC.Api.Lmi.Transformation.UnitTests.Functions
         {
             // Arrange
             const HttpStatusCode expectedResult = HttpStatusCode.OK;
-            var dummyLmiSoc = A.Dummy<LmiSoc>();
+            var dummySocDatasetModel = A.Dummy<SocDatasetModel>();
             var dummyJobgroup = A.Dummy<JobGroupModel>();
-            A.CallTo(() => fakeCmsApiService.GetItemAsync<LmiSoc>(A<Uri>.Ignored)).Returns(dummyLmiSoc);
-            A.CallTo(() => fakeMapper.Map<JobGroupModel>(A<LmiSoc>.Ignored)).Returns(dummyJobgroup);
+            A.CallTo(() => fakeLmiImportApiConnector.GetDetailAsync(A<Uri>.Ignored)).Returns(dummySocDatasetModel);
+            A.CallTo(() => fakeMapper.Map<JobGroupModel>(A<SocDatasetModel>.Ignored)).Returns(dummyJobgroup);
             A.CallTo(() => fakeJobGroupDocumentService.GetAsync(A<Expression<Func<JobGroupModel, bool>>>.Ignored, A<string>.Ignored)).Returns(dummyJobgroup);
             A.CallTo(() => fakeJobGroupDocumentService.UpsertAsync(A<JobGroupModel>.Ignored)).Returns(expectedResult);
 
@@ -229,8 +226,8 @@ namespace DFC.Api.Lmi.Transformation.UnitTests.Functions
             var result = await lmiOrchestrationTrigger.TransformItemActivity(new Uri("https://somewhere.com", UriKind.Absolute)).ConfigureAwait(false);
 
             // Assert
-            A.CallTo(() => fakeCmsApiService.GetItemAsync<LmiSoc>(A<Uri>.Ignored)).MustHaveHappenedOnceExactly();
-            A.CallTo(() => fakeMapper.Map<JobGroupModel>(A<LmiSoc>.Ignored)).MustHaveHappenedOnceExactly();
+            A.CallTo(() => fakeLmiImportApiConnector.GetDetailAsync(A<Uri>.Ignored)).MustHaveHappenedOnceExactly();
+            A.CallTo(() => fakeMapper.Map<JobGroupModel>(A<SocDatasetModel>.Ignored)).MustHaveHappenedOnceExactly();
             A.CallTo(() => fakeJobGroupDocumentService.GetAsync(A<Expression<Func<JobGroupModel, bool>>>.Ignored, A<string>.Ignored)).MustHaveHappenedOnceExactly();
             A.CallTo(() => fakeJobGroupDocumentService.UpsertAsync(A<JobGroupModel>.Ignored)).MustHaveHappenedOnceExactly();
             Assert.Equal(expectedResult, result);
@@ -241,24 +238,24 @@ namespace DFC.Api.Lmi.Transformation.UnitTests.Functions
         {
             // Arrange
             const HttpStatusCode expectedResult = HttpStatusCode.BadRequest;
-            var dummyLmiSoc = A.Dummy<LmiSoc>();
+            var dummySocDatasetModel = A.Dummy<SocDatasetModel>();
             JobGroupModel? nullJobgroup = null;
-            A.CallTo(() => fakeCmsApiService.GetItemAsync<LmiSoc>(A<Uri>.Ignored)).Returns(dummyLmiSoc);
-            A.CallTo(() => fakeMapper.Map<JobGroupModel?>(A<LmiSoc>.Ignored)).Returns(nullJobgroup);
+            A.CallTo(() => fakeLmiImportApiConnector.GetDetailAsync(A<Uri>.Ignored)).Returns(dummySocDatasetModel);
+            A.CallTo(() => fakeMapper.Map<JobGroupModel?>(A<SocDatasetModel>.Ignored)).Returns(nullJobgroup);
 
             // Act
             var result = await lmiOrchestrationTrigger.TransformItemActivity(new Uri("https://somewhere.com", UriKind.Absolute)).ConfigureAwait(false);
 
             // Assert
-            A.CallTo(() => fakeCmsApiService.GetItemAsync<LmiSoc>(A<Uri>.Ignored)).MustHaveHappenedOnceExactly();
-            A.CallTo(() => fakeMapper.Map<JobGroupModel?>(A<LmiSoc>.Ignored)).MustHaveHappenedOnceExactly();
+            A.CallTo(() => fakeLmiImportApiConnector.GetDetailAsync(A<Uri>.Ignored)).MustHaveHappenedOnceExactly();
+            A.CallTo(() => fakeMapper.Map<JobGroupModel?>(A<SocDatasetModel>.Ignored)).MustHaveHappenedOnceExactly();
             A.CallTo(() => fakeJobGroupDocumentService.GetAsync(A<Expression<Func<JobGroupModel, bool>>>.Ignored, A<string>.Ignored)).MustNotHaveHappened();
             A.CallTo(() => fakeJobGroupDocumentService.UpsertAsync(A<JobGroupModel>.Ignored)).MustNotHaveHappened();
             Assert.Equal(expectedResult, result);
         }
 
         [Fact]
-        public async Task LmiOrchestrationTriggerPostGraphEventActivityIsSuccessful()
+        public async Task LmiOrchestrationTriggerPostEventActivityIsSuccessful()
         {
             // Arrange
             var eventGridPostRequest = new EventGridPostRequestModel

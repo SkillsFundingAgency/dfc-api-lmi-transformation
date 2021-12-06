@@ -3,8 +3,7 @@
   "Values": {
     "AzureWebJobsStorage": "UseDevelopmentStorage=true",
     "FUNCTIONS_WORKER_RUNTIME": "dotnet",
-    "APPINSIGHTS_INSTRUMENTATIONKEY": "__AppInsightsKey__",
-    "ApiSuffix": "__Environment__"
+    "APPINSIGHTS_INSTRUMENTATIONKEY": "__AppInsightsKey__"
   },
   "Configuration": {
     "CosmosDbConnections": {
@@ -26,11 +25,6 @@
       "BackoffPower": 2,
       "Count": 3
     }
-  },
-  "CmsApiClientOptions": {
-    "Timeout": "00:00:30",
-    "BaseAddress": "__CmsApiBaseAddress__",
-    "SummaryEndpoint": "lmisoc"
   },
   "EventGridClientOptions": {
     "TopicEndpoint": "__EventGridTopicEndpoint__/api/events",

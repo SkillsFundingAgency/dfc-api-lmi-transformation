@@ -1,5 +1,6 @@
 ﻿using DFC.Api.Lmi.Transformation.Contracts;
 using DFC.Api.Lmi.Transformation.Models;
+using DFC.Api.Lmi.Transformation.Models.ClientOptions;
 using Microsoft.Azure.EventGrid.Models;
 using Microsoft.Extensions.Logging;
 using System;

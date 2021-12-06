@@ -18,7 +18,7 @@ namespace DFC.Api.Lmi.Transformation.Models.JobGroupModels
 
         public int Soc { get; set; }
 
-        public DateTime? CreatedDate { get; set; }
+        public DateTime? CachedDate { get; set; }
 
         public DateTime TransformedDate { get; set; } = DateTime.UtcNow;
 

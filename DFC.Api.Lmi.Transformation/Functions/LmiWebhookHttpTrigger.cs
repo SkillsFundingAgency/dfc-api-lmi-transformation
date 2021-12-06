@@ -20,16 +20,13 @@ namespace DFC.Api.Lmi.Transformation.Functions
     public class LmiWebhookHttpTrigger
     {
         private readonly ILogger<LmiWebhookHttpTrigger> logger;
-        private readonly EnvironmentValues environmentValues;
         private readonly ILmiWebhookReceiverService lmiWebhookReceiverService;
 
         public LmiWebhookHttpTrigger(
            ILogger<LmiWebhookHttpTrigger> logger,
-           EnvironmentValues environmentValues,
            ILmiWebhookReceiverService lmiWebhookReceiverService)
         {
             this.logger = logger;
-            this.environmentValues = environmentValues;
             this.lmiWebhookReceiverService = lmiWebhookReceiverService;
         }
 
@@ -49,7 +46,6 @@ namespace DFC.Api.Lmi.Transformation.Functions
             {
                 logger.LogInformation("Received webhook request");
 
-                bool isDraftEnvironment = environmentValues.IsDraftEnvironment;
                 using var streamReader = new StreamReader(request?.Body!);
                 var requestBody = await streamReader.ReadToEndAsync().ConfigureAwait(false);
 
@@ -67,56 +63,33 @@ namespace DFC.Api.Lmi.Transformation.Functions
                     case WebhookCommand.SubscriptionValidation:
                         return new OkObjectResult(webhookRequestModel.SubscriptionValidationResponse);
                     case WebhookCommand.TransformAllSocToJobGroup:
-                        if (!isDraftEnvironment)
-                        {
-                            return new BadRequestResult();
-                        }
 
                         socRequest = new SocRequestModel
                         {
-                            Url = webhookRequestModel.Url,
-                            IsDraftEnvironment = isDraftEnvironment,
+                            Uri = webhookRequestModel.Url,
                         };
                         instanceId = await starter.StartNewAsync(nameof(LmiOrchestrationTrigger.RefreshOrchestrator), socRequest).ConfigureAwait(false);
                         break;
                     case WebhookCommand.TransformSocToJobGroup:
-                        if (!isDraftEnvironment)
-                        {
-                            return new BadRequestResult();
-                        }
-
                         socRequest = new SocRequestModel
                         {
-                            Url = webhookRequestModel.Url,
+                            Uri = webhookRequestModel.Url,
                             SocId = webhookRequestModel.ContentId,
-                            IsDraftEnvironment = isDraftEnvironment,
                         };
                         instanceId = await starter.StartNewAsync(nameof(LmiOrchestrationTrigger.RefreshJobGroupOrchestrator), socRequest).ConfigureAwait(false);
                         break;
                     case WebhookCommand.PurgeAllJobGroups:
-                        if (!isDraftEnvironment)
-                        {
-                            return new BadRequestResult();
-                        }
-
                         socRequest = new SocRequestModel
                         {
-                            Url = webhookRequestModel.Url,
-                            IsDraftEnvironment = isDraftEnvironment,
+                            Uri = webhookRequestModel.Url,
                         };
                         instanceId = await starter.StartNewAsync(nameof(LmiOrchestrationTrigger.PurgeOrchestrator), socRequest).ConfigureAwait(false);
                         break;
                     case WebhookCommand.PurgeJobGroup:
-                        if (!isDraftEnvironment)
-                        {
-                            return new BadRequestResult();
-                        }
-
                         socRequest = new SocRequestModel
                         {
-                            Url = webhookRequestModel.Url,
+                            Uri = webhookRequestModel.Url,
                             SocId = webhookRequestModel.ContentId,
-                            IsDraftEnvironment = isDraftEnvironment,
                         };
                         instanceId = await starter.StartNewAsync(nameof(LmiOrchestrationTrigger.PurgeJobGroupOrchestrator), socRequest).ConfigureAwait(false);
                         break;
@@ -124,7 +97,7 @@ namespace DFC.Api.Lmi.Transformation.Functions
                         return new BadRequestResult();
                 }
 
-                logger.LogInformation($"Started orchestration with ID = '{instanceId}' for SOC {socRequest?.Url}");
+                logger.LogInformation($"Started orchestration with ID = '{instanceId}' for SOC {socRequest?.Uri}");
 
                 return starter.CreateCheckStatusResponse(request, instanceId);
             }

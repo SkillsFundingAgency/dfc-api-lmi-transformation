@@ -31,8 +31,8 @@ namespace DFC.Api.Lmi.Transformation.UnitTests.Services
         [Theory]
         [InlineData(null, MessageContentType.None)]
         [InlineData("", MessageContentType.None)]
-        [InlineData("https://somewhere.com/api/" + Constants.ApiForJobGroups, MessageContentType.JobGroup)]
-        [InlineData("https://somewhere.com/api/" + Constants.ApiForJobGroups + "/", MessageContentType.JobGroupItem)]
+        [InlineData("https://somewhere.com/api/" + Constants.ApiForLmiData, MessageContentType.LmiSocSummary)]
+        [InlineData("https://somewhere.com/api/" + Constants.ApiForLmiData + "/", MessageContentType.LmiSocItem)]
         public void LmiWebhookReceiverServiceDetermineMessageContentTypeReturnsExpected(string? apiEndpoint, MessageContentType expectedResult)
         {
             // Arrange
@@ -48,12 +48,12 @@ namespace DFC.Api.Lmi.Transformation.UnitTests.Services
         [InlineData(MessageContentType.None, WebhookCacheOperation.None, WebhookCommand.None)]
         [InlineData(MessageContentType.None, WebhookCacheOperation.CreateOrUpdate, WebhookCommand.None)]
         [InlineData(MessageContentType.None, WebhookCacheOperation.Delete, WebhookCommand.None)]
-        [InlineData(MessageContentType.JobGroup, WebhookCacheOperation.None, WebhookCommand.None)]
-        [InlineData(MessageContentType.JobGroup, WebhookCacheOperation.CreateOrUpdate, WebhookCommand.TransformAllSocToJobGroup)]
-        [InlineData(MessageContentType.JobGroup, WebhookCacheOperation.Delete, WebhookCommand.PurgeAllJobGroups)]
-        [InlineData(MessageContentType.JobGroupItem, WebhookCacheOperation.None, WebhookCommand.None)]
-        [InlineData(MessageContentType.JobGroupItem, WebhookCacheOperation.CreateOrUpdate, WebhookCommand.TransformSocToJobGroup)]
-        [InlineData(MessageContentType.JobGroupItem, WebhookCacheOperation.Delete, WebhookCommand.PurgeJobGroup)]
+        [InlineData(MessageContentType.LmiSocSummary, WebhookCacheOperation.None, WebhookCommand.None)]
+        [InlineData(MessageContentType.LmiSocSummary, WebhookCacheOperation.CreateOrUpdate, WebhookCommand.TransformAllSocToJobGroup)]
+        [InlineData(MessageContentType.LmiSocSummary, WebhookCacheOperation.Delete, WebhookCommand.PurgeAllJobGroups)]
+        [InlineData(MessageContentType.LmiSocItem, WebhookCacheOperation.None, WebhookCommand.None)]
+        [InlineData(MessageContentType.LmiSocItem, WebhookCacheOperation.CreateOrUpdate, WebhookCommand.TransformSocToJobGroup)]
+        [InlineData(MessageContentType.LmiSocItem, WebhookCacheOperation.Delete, WebhookCommand.PurgeJobGroup)]
         public void LmiWebhookReceiverServiceDetermineWebhookCommandReturnsExpected(MessageContentType messageContentType, WebhookCacheOperation webhookCacheOperation, WebhookCommand expectedResult)
         {
             // Arrange
@@ -87,10 +87,10 @@ namespace DFC.Api.Lmi.Transformation.UnitTests.Services
         }
 
         [Theory]
-        [InlineData(EventTypePublished, WebhookCommand.TransformAllSocToJobGroup, "https://somewhere.com/api/" + Constants.ApiForJobGroups)]
-        [InlineData(EventTypePublished, WebhookCommand.TransformSocToJobGroup, "https://somewhere.com/api/" + Constants.ApiForJobGroups + "/")]
-        [InlineData(EventTypeDeleted, WebhookCommand.PurgeAllJobGroups, "https://somewhere.com/api/" + Constants.ApiForJobGroups)]
-        [InlineData(EventTypeDeleted, WebhookCommand.PurgeJobGroup, "https://somewhere.com/api/" + Constants.ApiForJobGroups + "/")]
+        [InlineData(EventTypePublished, WebhookCommand.TransformAllSocToJobGroup, "https://somewhere.com/api/" + Constants.ApiForLmiData)]
+        [InlineData(EventTypePublished, WebhookCommand.TransformSocToJobGroup, "https://somewhere.com/api/" + Constants.ApiForLmiData + "/")]
+        [InlineData(EventTypeDeleted, WebhookCommand.PurgeAllJobGroups, "https://somewhere.com/api/" + Constants.ApiForLmiData)]
+        [InlineData(EventTypeDeleted, WebhookCommand.PurgeJobGroup, "https://somewhere.com/api/" + Constants.ApiForLmiData + "/")]
         public void LmiWebhookReceiverServiceExtractEventReturnsExpected(string eventType, WebhookCommand webhookCommand, string api)
         {
             // Arrange
@@ -215,7 +215,7 @@ namespace DFC.Api.Lmi.Transformation.UnitTests.Services
             var exceptionResult = Assert.Throws<InvalidDataException>(() => lmiWebhookReceiverService.ExtractEvent(requestBody));
 
             // Assert
-            Assert.Equal($"Invalid event type '{eventGridEvents.First().EventType}' received for Event Id: {eventGridEvents.First().Id}, should be one of 'draft,published,draft-discarded,unpublished,deleted'", exceptionResult.Message);
+            Assert.Equal($"Invalid event type '{eventGridEvents.First().EventType}' received for Event Id: {eventGridEvents.First().Id}, should be one of 'published,unpublished,deleted'", exceptionResult.Message);
         }
 
         private static EventGridEvent[] BuildValidEventGridEvent<TModel>(string eventType, TModel? data)

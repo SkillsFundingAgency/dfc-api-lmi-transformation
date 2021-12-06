@@ -1,8 +1,7 @@
 ﻿using AutoMapper;
 using DFC.Api.Lmi.Transformation.Common;
-using DFC.Api.Lmi.Transformation.Models.ContentApiModels;
 using DFC.Api.Lmi.Transformation.Models.JobGroupModels;
-using DFC.Content.Pkg.Netcore.Data.Contracts;
+using DFC.Api.Lmi.Transformation.Models.LmiImportApiModels;
 using System;
 using System.Collections.Generic;
 using System.Diagnostics.CodeAnalysis;
@@ -11,9 +10,9 @@ using System.Linq;
 namespace DFC.Api.Lmi.Transformation.AutoMapperProfiles.ValuerConverters
 {
     [ExcludeFromCodeCoverage]
-    public class BreakdownYearValuesConverter : IValueConverter<IList<IBaseContentItemModel>?, List<BreakdownYearValueModel>?>
+    public class BreakdownYearValuesConverter : IValueConverter<IList<LmiSocBreakdownYearValueModel>?, List<BreakdownYearValueModel>?>
     {
-        public List<BreakdownYearValueModel>? Convert(IList<IBaseContentItemModel>? sourceMember, ResolutionContext context)
+        public List<BreakdownYearValueModel>? Convert(IList<LmiSocBreakdownYearValueModel>? sourceMember, ResolutionContext context)
         {
             _ = context ?? throw new ArgumentNullException(nameof(context));
 
@@ -23,40 +22,32 @@ namespace DFC.Api.Lmi.Transformation.AutoMapperProfiles.ValuerConverters
             }
 
             var results = new List<BreakdownYearValueModel>();
+            var measure = sourceMember.First().Measure;
 
             foreach (var item in sourceMember)
             {
-                switch (item.ContentType)
+                var model = context.Mapper.Map<BreakdownYearValueModel>(item);
+
+                switch (measure)
                 {
-                    case nameof(LmiSocBreakdownYearValue):
-                        if (item is LmiSocBreakdownYearValue lmiSocBreakdownYearValues)
+                    case Constants.MeasureForRegion:
+                        var excludeRegions = new[] { Constants.RegionCodeForWales, Constants.RegionCodeForScotland, Constants.RegionCodeForNorthernIreland };
+
+                        if (!excludeRegions.Contains(model.Code))
                         {
-                            var model = context.Mapper.Map<BreakdownYearValueModel>(lmiSocBreakdownYearValues);
-
-                            switch (lmiSocBreakdownYearValues.Measure)
-                            {
-                                case Constants.MeasureForRegion:
-                                    var excludeRegions = new[] { Constants.RegionCodeForWales, Constants.RegionCodeForScotland, Constants.RegionCodeForNorthernIreland };
-
-                                    if (!excludeRegions.Contains(model.Code))
-                                    {
-                                        results.Add(model);
-                                    }
-
-                                    break;
-                                default:
-                                    results.Add(model);
-                                    break;
-                            }
+                            results.Add(model);
                         }
 
+                        break;
+                    default:
+                        results.Add(model);
                         break;
                 }
             }
 
-            if (results.Any() && results.First().Measure != null)
+            if (results.Any() && measure != null)
             {
-                switch (results.First().Measure)
+                switch (measure)
                 {
                     case Constants.MeasureForRegion:
                         results = results.OrderBy(o => o.Name).ToList();
