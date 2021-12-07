@@ -1,7 +1,7 @@
 # dfc-api-lmi-transformation
 ## Introduction
 
-This function app is used to retrieve LMI data from the Graph database using the Content API.
+This function app is used to retrieve LMI data from the LMI Import cache.
 This function app collates the LMI data and transforms it into job-group oriented data which is then stored in a local Cosmos cache.
 
 ## Getting Started
@@ -35,15 +35,12 @@ The project contains a "local.settings-template.json" file which contains appset
 
 By default, the appsettings include local Azure Cosmos Emulator configurations using the well known configuration values for Content Page storage and. These may be changed to suit your environment if you are not using the Azure Cosmos Emulator.
 
-This app uses the Content API to retrieve LMI data from the Graph database. 
-
 This app also subscribes to change events in Event Grid. To make use of it you will need to configure the Subscriptions service which will require an APIM API key for that service.
 
 ## App Settings
 
 |App setting|Value|
 |-----------|-----|
-|ApiSuffix|dev|
 |Configuration__CosmosDbConnections__LmiTransformation__AccessKey|__CosmosAccessKey__|
 |Configuration__CosmosDbConnections__LmiTransformation__EndpointUrl|__CosmosEndpoint__|
 |Configuration__CosmosDbConnections__LmiTransformation__DatabaseId|dfc-api-lmi-transformation|

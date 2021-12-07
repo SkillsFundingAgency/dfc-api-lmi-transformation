@@ -1,5 +1,4 @@
 ﻿using DFC.Api.Lmi.Transformation.Functions;
-using DFC.Api.Lmi.Transformation.Models;
 using DFC.Compui.Subscriptions.Pkg.NetStandard.Data.Contracts;
 using FakeItEasy;
 using Microsoft.AspNetCore.Mvc;
@@ -15,7 +14,6 @@ namespace DFC.Api.Lmi.Transformation.UnitTests.Functions
     public class SubscriptionRegistrationHttpTriggerTests
     {
         private readonly ILogger<SubscriptionRegistrationHttpTrigger> logger;
-        private readonly EnvironmentValues environmentValues = new EnvironmentValues();
         private readonly ISubscriptionRegistrationService subscriptionRegistrationService;
 
         public SubscriptionRegistrationHttpTriggerTests()
@@ -28,7 +26,7 @@ namespace DFC.Api.Lmi.Transformation.UnitTests.Functions
         public async Task SubscriptionRegistrationPostReturnsOk()
         {
             // Arrange
-            var function = new SubscriptionRegistrationHttpTrigger(logger, environmentValues, subscriptionRegistrationService);
+            var function = new SubscriptionRegistrationHttpTrigger(logger, subscriptionRegistrationService);
 
             // Act
             var result = await function.Run(null).ConfigureAwait(false);
@@ -43,7 +41,7 @@ namespace DFC.Api.Lmi.Transformation.UnitTests.Functions
         {
             // Arrange
             A.CallTo(() => subscriptionRegistrationService.RegisterSubscription(A<string>.Ignored)).ThrowsAsync(new HttpRequestException());
-            var function = new SubscriptionRegistrationHttpTrigger(logger, environmentValues, subscriptionRegistrationService);
+            var function = new SubscriptionRegistrationHttpTrigger(logger, subscriptionRegistrationService);
 
             // Act
             var result = await function.Run(null).ConfigureAwait(false);

@@ -1,9 +1,9 @@
 ﻿using System.Diagnostics.CodeAnalysis;
 
-namespace DFC.Api.Lmi.Transformation.Models.JobGroupModels
+namespace DFC.Api.Lmi.Transformation.Models.LmiImportApiModels
 {
     [ExcludeFromCodeCoverage]
-    public class PredictedYearModel
+    public class LmiSocPredictedYearModel
     {
         public int Year { get; set; }
 

@@ -1,4 +1,5 @@
 ﻿using DFC.Api.Lmi.Transformation.Models;
+using DFC.Api.Lmi.Transformation.Models.ClientOptions;
 using System.Threading.Tasks;
 
 namespace DFC.Api.Lmi.Transformation.Contracts
