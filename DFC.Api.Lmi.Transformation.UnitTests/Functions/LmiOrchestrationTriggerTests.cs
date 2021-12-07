@@ -94,13 +94,11 @@ namespace DFC.Api.Lmi.Transformation.UnitTests.Functions
         public async Task LmiOrchestrationTriggerPurgeOrchestratorIsSuccessful()
         {
             // Arrange
-            A.CallTo(() => fakeDurableOrchestrationContext.GetInput<SocRequestModel>()).Returns(new SocRequestModel { SocId = Guid.NewGuid() });
 
             // Act
             await lmiOrchestrationTrigger.PurgeOrchestrator(fakeDurableOrchestrationContext).ConfigureAwait(false);
 
             // Assert
-            A.CallTo(() => fakeDurableOrchestrationContext.GetInput<SocRequestModel>()).MustHaveHappenedOnceExactly();
             A.CallTo(() => fakeDurableOrchestrationContext.CallActivityAsync(nameof(LmiOrchestrationTrigger.PurgeActivity), A<object>.Ignored)).MustHaveHappenedOnceExactly();
             A.CallTo(() => fakeDurableOrchestrationContext.CallActivityAsync(nameof(LmiOrchestrationTrigger.PostTransformationEventActivity), A<EventGridPostRequestModel>.Ignored)).MustHaveHappenedOnceExactly();
         }

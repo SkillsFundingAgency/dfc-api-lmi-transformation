@@ -108,8 +108,6 @@ namespace DFC.Api.Lmi.Transformation.Functions
         {
             _ = context ?? throw new ArgumentNullException(nameof(context));
 
-            var socRequest = context.GetInput<SocRequestModel>();
-
             await context.CallActivityAsync(nameof(PurgeActivity), null).ConfigureAwait(true);
 
             var eventGridPostRequest = new EventGridPostRequestModel
