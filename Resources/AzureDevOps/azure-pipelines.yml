@@ -105,50 +105,6 @@ stages:
         -
           - azureFunctionName: '${{ variables.FunctionAppName }}'
 
-- stage: DeployToLabDraftLmiTransformation
-  condition: succeeded()
-  displayName: Deploy to LAB-DRAFT_LMI_TRANSFORMATIONS
-  variables:
-  - group: dfc-shared-all
-  - group: dfc-shared-lab
-  - group: dfc-app-shared-all
-  - group: dfc-app-shared-lab
-  - group: dfc-app-shared-registration-draft
-  - group: dfc-stax-shared-lab
-  - group: dfc-compositeui-all
-  - template: VariableTemplates\LabDraftEnvironmentVariables.yml
-  
-  jobs:
-  - template: JobTemplates/deploy-environment.yml
-    parameters:
-      AzureSubscription: 'SFA-CDH-Dev/Test (962cae10-2950-412a-93e3-d8ae92b17896)'
-      EnvironmentTag: '$(EnvironmentTag)'
-      ParentBusiness: '$(ParentBusiness)'
-      ServiceOffering: '$(ServiceOffering)'
-      ResourceGroup: $(ResourceGroup)
-      DfCDevopsPath: '$(Agent.BuildDirectory)/s/dfc-devops'
-      PackageFile:  "$(Pipeline.Workspace)/${{ variables.SolutionBaseName }}.DeploymentPackages/${{ variables.SolutionBaseName }}.zip"
-      ArmTemplateFolder: "$(Pipeline.Workspace)/${{ variables.SolutionBaseName }}.Resources.ArmTemplates/"
-      EnvironmentName: LAB-DRAFT_LMI_TRANSFORMATIONS
-      AppSharedResourceGroup: $(AppSharedResourceGroup)
-      appSharedCosmosDBName: $(appSharedCosmosDBName)
-      AppServiceName: '$(FunctionAppName)'
-      ApimLoggerName: "$(ApimLoggerName)"
-      ApimProductName: "$(ApimProductName)"
-      SharedResourceGroup: $(SharedResourceGroup)
-      ApimServiceName: $(ApimServiceName)
-      ApimProductInstanceName: $(ApimProductInstanceName)
-      ProductId: "$(ProductId)"
-      FunctionAppDomain: $(FunctionAppDomain)
-      APIMPolicyPath: "$(Pipeline.Workspace)/${{ variables.SolutionBaseName }}.ApimPolicies/"
-      ApimImportScript: "$(Pipeline.Workspace)/${{ variables.SolutionBaseName }}.Scripts/Import-ApimOpenApiDefinitionFromFile.ps1"
-      SpecificationPath: "$(Pipeline.Workspace)/${{ variables.SolutionBaseName }}.OpenApiDocs"
-      SubscriptionPosturi: '$(SubscriptionPosturi)'
-      ApimApiName: $(ApimApiName)
-      Apis:
-        -
-          - azureFunctionName: '${{ variables.FunctionAppName }}'
-
 - stage: DeployToDevLmiTransformation
   dependsOn: Build
   condition: and(succeeded(), eq(variables['Build.SourceBranch'], 'refs/heads/dev'))
@@ -194,50 +150,6 @@ stages:
         -
           - azureFunctionName: '${{ variables.FunctionAppName }}'
 
-- stage: DeployToDevDraftLmiTransformation
-  condition: succeeded()
-  displayName: Deploy to DEV-DRAFT_LMI_TRANSFORMATIONS
-  variables:
-  - group: dfc-shared-all
-  - group: dfc-shared-dev
-  - group: dfc-app-shared-all
-  - group: dfc-app-shared-dev
-  - group: dfc-app-shared-registration-draft
-  - group: dfc-stax-shared-dev
-  - group: dfc-compositeui-all
-  - template: VariableTemplates\DevDraftEnvironmentVariables.yml
-  
-  jobs:
-  - template: JobTemplates/deploy-environment.yml
-    parameters:
-      AzureSubscription: 'SFA-CDH-Dev/Test (962cae10-2950-412a-93e3-d8ae92b17896)'
-      EnvironmentTag: '$(EnvironmentTag)'
-      ParentBusiness: '$(ParentBusiness)'
-      ServiceOffering: '$(ServiceOffering)'
-      ResourceGroup: $(ResourceGroup)
-      DfCDevopsPath: '$(Agent.BuildDirectory)/s/dfc-devops'
-      PackageFile:  "$(Pipeline.Workspace)/${{ variables.SolutionBaseName }}.DeploymentPackages/${{ variables.SolutionBaseName }}.zip"
-      ArmTemplateFolder: "$(Pipeline.Workspace)/${{ variables.SolutionBaseName }}.Resources.ArmTemplates/"
-      EnvironmentName: DEV-DRAFT_LMI_TRANSFORMATIONS
-      AppSharedResourceGroup: $(AppSharedResourceGroup)
-      appSharedCosmosDBName: $(appSharedCosmosDBName)
-      AppServiceName: '$(FunctionAppName)'
-      ApimLoggerName: "$(ApimLoggerName)"
-      ApimProductName: "$(ApimProductName)"
-      SharedResourceGroup: $(SharedResourceGroup)
-      ApimServiceName: $(ApimServiceName)
-      ApimProductInstanceName: $(ApimProductInstanceName)
-      ProductId: "$(ProductId)"
-      FunctionAppDomain: $(FunctionAppDomain)
-      APIMPolicyPath: "$(Pipeline.Workspace)/${{ variables.SolutionBaseName }}.ApimPolicies/"
-      ApimImportScript: "$(Pipeline.Workspace)/${{ variables.SolutionBaseName }}.Scripts/Import-ApimOpenApiDefinitionFromFile.ps1"
-      SpecificationPath: "$(Pipeline.Workspace)/${{ variables.SolutionBaseName }}.OpenApiDocs"
-      SubscriptionPosturi: '$(SubscriptionPosturi)'
-      ApimApiName: $(ApimApiName)
-      Apis:
-        -
-          - azureFunctionName: '${{ variables.FunctionAppName }}'
-
 - stage: DeployToSitLmiTransformation
   condition: succeeded()
   displayName: Deploy to SIT_LMI_TRANSFORMATIONS
@@ -263,50 +175,6 @@ stages:
       PackageFile:  "$(Pipeline.Workspace)/${{ variables.SolutionBaseName }}.DeploymentPackages/${{ variables.SolutionBaseName }}.zip"
       ArmTemplateFolder: "$(Pipeline.Workspace)/${{ variables.SolutionBaseName }}.Resources.ArmTemplates/"
       EnvironmentName: SIT_LMI_TRANSFORMATIONS
-      AppSharedResourceGroup: $(AppSharedResourceGroup)
-      appSharedCosmosDBName: $(appSharedCosmosDBName)
-      AppServiceName: '$(FunctionAppName)'
-      ApimLoggerName: "$(ApimLoggerName)"
-      ApimProductName: "$(ApimProductName)"
-      ProductId: "$(ProductId)"
-      SharedResourceGroup: $(SharedResourceGroup)
-      ApimServiceName: $(ApimServiceName)
-      ApimProductInstanceName: $(ApimProductInstanceName)
-      FunctionAppDomain: $(FunctionAppDomain)
-      APIMPolicyPath: "$(Pipeline.Workspace)/${{ variables.SolutionBaseName }}.ApimPolicies/"
-      ApimImportScript: "$(Pipeline.Workspace)/${{ variables.SolutionBaseName }}.Scripts/Import-ApimOpenApiDefinitionFromFile.ps1"
-      SpecificationPath: "$(Pipeline.Workspace)/${{ variables.SolutionBaseName }}.OpenApiDocs"
-      SubscriptionPosturi: '$(SubscriptionPosturi)'
-      ApimApiName: $(ApimApiName)
-      Apis:
-        -
-          - azureFunctionName: '${{ variables.FunctionAppName }}'
-
-- stage: DeployToSitDraftLmiTransformation
-  condition: succeeded()
-  displayName: Deploy to SIT-DRAFT_LMI_TRANSFORMATIONS
-  variables:
-  - group: dfc-shared-all
-  - group: dfc-shared-sit
-  - group: dfc-app-shared-all
-  - group: dfc-app-shared-sit
-  - group: dfc-app-shared-registration-draft
-  - group: dfc-stax-shared-sit
-  - group: dfc-compositeui-all
-  - template: VariableTemplates\SitDraftEnvironmentVariables.yml
-  
-  jobs:
-  - template: JobTemplates/deploy-environment.yml
-    parameters:
-      AzureSubscription: 'SFA-CDH-Dev/Test (962cae10-2950-412a-93e3-d8ae92b17896)'
-      EnvironmentTag: '$(EnvironmentTag)'
-      ParentBusiness: '$(ParentBusiness)'
-      ServiceOffering: '$(ServiceOffering)'
-      ResourceGroup: $(ResourceGroup)
-      DfCDevopsPath: '$(Agent.BuildDirectory)/s/dfc-devops'
-      PackageFile:  "$(Pipeline.Workspace)/${{ variables.SolutionBaseName }}.DeploymentPackages/${{ variables.SolutionBaseName }}.zip"
-      ArmTemplateFolder: "$(Pipeline.Workspace)/${{ variables.SolutionBaseName }}.Resources.ArmTemplates/"
-      EnvironmentName: SIT-DRAFT_LMI_TRANSFORMATIONS
       AppSharedResourceGroup: $(AppSharedResourceGroup)
       appSharedCosmosDBName: $(appSharedCosmosDBName)
       AppServiceName: '$(FunctionAppName)'
@@ -370,52 +238,8 @@ stages:
         -
           - azureFunctionName: '${{ variables.FunctionAppName }}'
 
-- stage: DeployToPPDraftLmiTransformation
-  condition: and(eq(dependencies.DeployToPPLmiTransformation.result,'Succeeded'), eq(variables['Build.SourceBranch'], 'refs/heads/master'))
-  displayName: Deploy to PP-DRAFT_LMI_TRANSFORMATIONS
-  variables:
-  - group: dfc-shared-all
-  - group: dfc-shared-pp
-  - group: dfc-app-shared-all
-  - group: dfc-app-shared-pp
-  - group: dfc-app-shared-registration-draft
-  - group: dfc-stax-shared-pp
-  - group: dfc-compositeui-all
-  - template: VariableTemplates\PPDraftEnvironmentVariables.yml
-  
-  jobs:
-  - template: JobTemplates/deploy-environment.yml
-    parameters:
-      AzureSubscription: 'SFA-DIG-PreProd (931bc9f6-359c-4f65-a753-1ee191a1fd6c)'
-      EnvironmentTag: '$(EnvironmentTag)'
-      ParentBusiness: '$(ParentBusiness)'
-      ServiceOffering: '$(ServiceOffering)'
-      ResourceGroup: $(ResourceGroup)
-      DfCDevopsPath: '$(Agent.BuildDirectory)/s/dfc-devops'
-      PackageFile:  "$(Pipeline.Workspace)/${{ variables.SolutionBaseName }}.DeploymentPackages/${{ variables.SolutionBaseName }}.zip"
-      ArmTemplateFolder: "$(Pipeline.Workspace)/${{ variables.SolutionBaseName }}.Resources.ArmTemplates/"
-      EnvironmentName: PP-DRAFT_LMI_TRANSFORMATIONS
-      AppSharedResourceGroup: $(AppSharedResourceGroup)
-      appSharedCosmosDBName: $(appSharedCosmosDBName)
-      AppServiceName: '$(FunctionAppName)'
-      ApimLoggerName: "$(ApimLoggerName)"
-      ApimProductName: "$(ApimProductName)"
-      ProductId: "$(ProductId)"
-      SharedResourceGroup: $(SharedResourceGroup)
-      ApimServiceName: $(ApimServiceName)
-      ApimProductInstanceName: $(ApimProductInstanceName)
-      FunctionAppDomain: $(FunctionAppDomain)
-      APIMPolicyPath: "$(Pipeline.Workspace)/${{ variables.SolutionBaseName }}.ApimPolicies/"
-      ApimImportScript: "$(Pipeline.Workspace)/${{ variables.SolutionBaseName }}.Scripts/Import-ApimOpenApiDefinitionFromFile.ps1"
-      SpecificationPath: "$(Pipeline.Workspace)/${{ variables.SolutionBaseName }}.OpenApiDocs"
-      ApimApiName: $(ApimApiName)
-      SubscriptionPosturi: '$(SubscriptionPosturi)'
-      Apis:
-        -
-          - azureFunctionName: '${{ variables.FunctionAppName }}'
-
 - stage: DeployToPRDLmiTransformation
-  condition: and(eq(dependencies.DeployToPPDraftLmiTransformation.result,'Succeeded'), eq(variables['Build.SourceBranch'], 'refs/heads/master'))
+  condition: and(eq(dependencies.DeployToPPLmiTransformation.result,'Succeeded'), eq(variables['Build.SourceBranch'], 'refs/heads/master'))
   displayName: Deploy to PRD_LMI_TRANSFORMATIONS
   variables:
   - group: dfc-shared-all
@@ -439,50 +263,6 @@ stages:
       PackageFile:  "$(Pipeline.Workspace)/${{ variables.SolutionBaseName }}.DeploymentPackages/${{ variables.SolutionBaseName }}.zip"
       ArmTemplateFolder: "$(Pipeline.Workspace)/${{ variables.SolutionBaseName }}.Resources.ArmTemplates/"
       EnvironmentName: PRD_LMI_TRANSFORMATIONS
-      AppSharedResourceGroup: $(AppSharedResourceGroup)
-      appSharedCosmosDBName: $(appSharedCosmosDBName)
-      AppServiceName: '$(FunctionAppName)'
-      ApimLoggerName: "$(ApimLoggerName)"
-      ApimProductName: "$(ApimProductName)"
-      ProductId: "$(ProductId)"
-      SharedResourceGroup: $(SharedResourceGroup)
-      ApimServiceName: $(ApimServiceName)
-      ApimProductInstanceName: $(ApimProductInstanceName)
-      FunctionAppDomain: $(FunctionAppDomain)
-      APIMPolicyPath: "$(Pipeline.Workspace)/${{ variables.SolutionBaseName }}.ApimPolicies/"
-      ApimImportScript: "$(Pipeline.Workspace)/${{ variables.SolutionBaseName }}.Scripts/Import-ApimOpenApiDefinitionFromFile.ps1"
-      SpecificationPath: "$(Pipeline.Workspace)/${{ variables.SolutionBaseName }}.OpenApiDocs"
-      ApimApiName: $(ApimApiName)
-      SubscriptionPosturi: '$(SubscriptionPosturi)'
-      Apis:
-        -
-          - azureFunctionName: '${{ variables.FunctionAppName }}'
-
-- stage: DeployToPRDDraftLmiTransformation
-  condition: and(eq(dependencies.DeployToPRDLmiTransformation.result,'Succeeded'), eq(variables['Build.SourceBranch'], 'refs/heads/master'))
-  displayName: Deploy to PRD-DRAFT_LMI_TRANSFORMATIONS
-  variables:
-  - group: dfc-shared-all
-  - group: dfc-shared-prd
-  - group: dfc-app-shared-all
-  - group: dfc-app-shared-prd
-  - group: dfc-app-shared-registration-draft
-  - group: dfc-stax-shared-prd
-  - group: dfc-compositeui-all
-  - template: VariableTemplates\PRDDraftEnvironmentVariables.yml
-  
-  jobs:
-  - template: JobTemplates/deploy-environment.yml
-    parameters:
-      AzureSubscription: 'SFA-DIG-Prod (6c93f7dc-6c36-4ea6-8de3-3f4574f88027)'
-      EnvironmentTag: '$(EnvironmentTag)'
-      ParentBusiness: '$(ParentBusiness)'
-      ServiceOffering: '$(ServiceOffering)'
-      ResourceGroup: $(ResourceGroup)
-      DfCDevopsPath: '$(Agent.BuildDirectory)/s/dfc-devops'
-      PackageFile:  "$(Pipeline.Workspace)/${{ variables.SolutionBaseName }}.DeploymentPackages/${{ variables.SolutionBaseName }}.zip"
-      ArmTemplateFolder: "$(Pipeline.Workspace)/${{ variables.SolutionBaseName }}.Resources.ArmTemplates/"
-      EnvironmentName: PRD-DRAFT_LMI_TRANSFORMATIONS
       AppSharedResourceGroup: $(AppSharedResourceGroup)
       appSharedCosmosDBName: $(appSharedCosmosDBName)
       AppServiceName: '$(FunctionAppName)'

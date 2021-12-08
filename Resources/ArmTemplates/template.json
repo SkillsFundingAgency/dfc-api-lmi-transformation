@@ -67,9 +67,6 @@
         "description": "The name of the collection to create"
       }
     },
-    "contentUrl": {
-      "type": "string"
-    },
     "SubscriptionSettingsEndpoint": {
       "type": "string"
     },
@@ -305,10 +302,6 @@
                 "value": "[reference(variables('functionAppInsightsName')).outputs.InstrumentationKey.value]"
               },
               {
-                "name": "ApiSuffix",
-                "value": "[if(contains(variables('resourcePrefix'),'draft'),'(draft)','')]"
-              },
-              {
                 "name": "Configuration__CosmosDbConnections__LmiTransformation__AccessKey",
                 "value": "[parameters('cosmosDbKey')]"
               },
@@ -327,18 +320,6 @@
               {
                 "name": "Configuration__CosmosDbConnections__LmiTransformation__PartitionKey",
                 "value": "[variables('cosmosDbCollectionPartitionKey')]"
-              },
-              {
-                "name": "CmsApiClientOptions__BaseAddress",
-                "value": "[parameters('contentUrl')]"
-              },
-              {
-                "name": "CmsApiClientOptions__SummaryEndpoint",
-                "value": "lmisoc"
-              },
-              {
-                "name": "CmsApiClientOptions__TimeOut",
-                "value": "00:01:00"
               },
               {
                 "name": "SubscriptionSettings__Endpoint",
