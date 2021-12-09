@@ -12,7 +12,7 @@ variables:
 - name: aspSize
   value: 2
 - name: lmiTransformationAppDatabaseThroughput
-  value: 400
+  value: 1200
 - name: ExceptionCountThreshold
   value: 10
 - name: MemoryPercentageThreshold
