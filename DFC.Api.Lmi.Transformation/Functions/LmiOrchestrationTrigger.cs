@@ -22,8 +22,8 @@ namespace DFC.Api.Lmi.Transformation.Functions
 {
     public class LmiOrchestrationTrigger
     {
-        private const string EventTypeForPublished = "published";
-        private const string EventTypeForDeleted = "deleted";
+        private const string EventTypeForDraft = "draft";
+        private const string EventTypeForDraftDiscarded = "draft-discarded";
 
         private readonly ILogger<LmiOrchestrationTrigger> logger;
         private readonly IMapper mapper;
@@ -72,7 +72,7 @@ namespace DFC.Api.Lmi.Transformation.Functions
                     ItemId = socRequest.SocId,
                     Api = $"{eventGridClientOptions.ApiEndpoint}/{socRequest.SocId}",
                     DisplayText = $"LMI transformed into job-group from {socRequest.Uri}",
-                    EventType = EventTypeForPublished,
+                    EventType = EventTypeForDraft,
                 };
 
                 await context.CallActivityAsync(nameof(PostTransformationEventActivity), eventGridPostRequest).ConfigureAwait(true);
@@ -97,7 +97,7 @@ namespace DFC.Api.Lmi.Transformation.Functions
                 ItemId = socRequest.SocId,
                 Api = $"{eventGridClientOptions.ApiEndpoint}/{socRequest.SocId}",
                 DisplayText = $"LMI purged job-group for {socRequest.SocId}",
-                EventType = EventTypeForDeleted,
+                EventType = EventTypeForDraftDiscarded,
             };
 
             await context.CallActivityAsync(nameof(PostTransformationEventActivity), eventGridPostRequest).ConfigureAwait(true);
@@ -115,7 +115,7 @@ namespace DFC.Api.Lmi.Transformation.Functions
                 ItemId = context.NewGuid(),
                 Api = $"{eventGridClientOptions.ApiEndpoint}",
                 DisplayText = "LMI purged all job-group ",
-                EventType = EventTypeForDeleted,
+                EventType = EventTypeForDraftDiscarded,
             };
 
             await context.CallActivityAsync(nameof(PostTransformationEventActivity), eventGridPostRequest).ConfigureAwait(true);
@@ -151,7 +151,7 @@ namespace DFC.Api.Lmi.Transformation.Functions
                     ItemId = context.NewGuid(),
                     Api = $"{eventGridClientOptions.ApiEndpoint}",
                     DisplayText = $"LMI transformed all job-groups from {socRequest.Uri}",
-                    EventType = EventTypeForPublished,
+                    EventType = EventTypeForDraft,
                 };
 
                 await context.CallActivityAsync(nameof(PostTransformationEventActivity), eventGridPostRequest).ConfigureAwait(true);
