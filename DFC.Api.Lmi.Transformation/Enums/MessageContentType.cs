@@ -3,7 +3,7 @@
     public enum MessageContentType
     {
         None,
-        JobGroup,
-        JobGroupItem,
+        LmiSocSummary,
+        LmiSocItem,
     }
 }

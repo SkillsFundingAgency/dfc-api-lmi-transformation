@@ -1,11 +1,12 @@
 ﻿using AutoMapper;
 using DFC.Api.Lmi.Transformation.Contracts;
+using DFC.Api.Lmi.Transformation.Extensions;
 using DFC.Api.Lmi.Transformation.Models;
-using DFC.Api.Lmi.Transformation.Models.ContentApiModels;
+using DFC.Api.Lmi.Transformation.Models.ClientOptions;
 using DFC.Api.Lmi.Transformation.Models.FunctionRequestModels;
 using DFC.Api.Lmi.Transformation.Models.JobGroupModels;
+using DFC.Api.Lmi.Transformation.Models.LmiImportApiModels;
 using DFC.Compui.Cosmos.Contracts;
-using DFC.Content.Pkg.Netcore.Data.Contracts;
 using Microsoft.Azure.WebJobs;
 using Microsoft.Azure.WebJobs.Extensions.DurableTask;
 using Microsoft.Extensions.Logging;
@@ -22,13 +23,11 @@ namespace DFC.Api.Lmi.Transformation.Functions
     public class LmiOrchestrationTrigger
     {
         private const string EventTypeForDraft = "draft";
-        private const string EventTypeForPublished = "published";
         private const string EventTypeForDraftDiscarded = "draft-discarded";
-        private const string EventTypeForDeleted = "deleted";
 
         private readonly ILogger<LmiOrchestrationTrigger> logger;
         private readonly IMapper mapper;
-        private readonly ICmsApiService cmsApiService;
+        private readonly ILmiImportApiConnector lmiImportApiConnector;
         private readonly IDocumentService<JobGroupModel> jobGroupDocumentService;
         private readonly IEventGridService eventGridService;
         private readonly EventGridClientOptions eventGridClientOptions;
@@ -36,8 +35,7 @@ namespace DFC.Api.Lmi.Transformation.Functions
         public LmiOrchestrationTrigger(
             ILogger<LmiOrchestrationTrigger> logger,
             IMapper mapper,
-            IContentTypeMappingService contentTypeMappingService,
-            ICmsApiService cmsApiService,
+            ILmiImportApiConnector lmiImportApiConnector,
             IDocumentService<JobGroupModel> jobGroupDocumentService,
             IEventGridService eventGridService,
             EventGridClientOptions eventGridClientOptions)
@@ -45,24 +43,16 @@ namespace DFC.Api.Lmi.Transformation.Functions
             this.logger = logger;
             this.mapper = mapper;
             this.jobGroupDocumentService = jobGroupDocumentService;
-            this.cmsApiService = cmsApiService;
+            this.lmiImportApiConnector = lmiImportApiConnector;
             this.jobGroupDocumentService = jobGroupDocumentService;
             this.eventGridService = eventGridService;
             this.eventGridClientOptions = eventGridClientOptions;
-
-            contentTypeMappingService.AddMapping(nameof(LmiSocJobProfile), typeof(LmiSocJobProfile));
-            contentTypeMappingService.AddMapping(nameof(LmiSocPredicted), typeof(LmiSocPredicted));
-            contentTypeMappingService.AddMapping(nameof(LmiSocReplacementDemand), typeof(LmiSocReplacementDemand));
-            contentTypeMappingService.AddMapping(nameof(LmiSocPredictedYear), typeof(LmiSocPredictedYear));
-            contentTypeMappingService.AddMapping(nameof(LmiSocBreakdown), typeof(LmiSocBreakdown));
-            contentTypeMappingService.AddMapping(nameof(LmiSocBreakdownYear), typeof(LmiSocBreakdownYear));
-            contentTypeMappingService.AddMapping(nameof(LmiSocBreakdownYearValue), typeof(LmiSocBreakdownYearValue));
 
             //TODO: ian: need to initialize the telemetry properly
             Activity? activity = null;
             if (Activity.Current == null)
             {
-                activity = new Activity(nameof(LmiWebhookHttpTrigger)).Start();
+                activity = new Activity(nameof(LmiOrchestrationTrigger)).Start();
                 activity.SetParentId(Guid.NewGuid().ToString());
             }
         }
@@ -73,10 +63,7 @@ namespace DFC.Api.Lmi.Transformation.Functions
             _ = context ?? throw new ArgumentNullException(nameof(context));
 
             var socRequest = context.GetInput<SocRequestModel>();
-
-            await context.CallActivityAsync(nameof(PurgeSocActivity), socRequest.SocId).ConfigureAwait(true);
-
-            var upsertResult = await context.CallActivityAsync<HttpStatusCode>(nameof(TransformItemActivity), socRequest.Url).ConfigureAwait(true);
+            var upsertResult = await context.CallActivityAsync<HttpStatusCode>(nameof(TransformItemActivity), socRequest.Uri).ConfigureAwait(true);
 
             if (upsertResult == HttpStatusCode.OK || upsertResult == HttpStatusCode.Created)
             {
@@ -84,8 +71,8 @@ namespace DFC.Api.Lmi.Transformation.Functions
                 {
                     ItemId = socRequest.SocId,
                     Api = $"{eventGridClientOptions.ApiEndpoint}/{socRequest.SocId}",
-                    DisplayText = $"LMI transformed into job-group from {socRequest.Url}",
-                    EventType = socRequest.IsDraftEnvironment ? EventTypeForDraft : EventTypeForPublished,
+                    DisplayText = $"LMI transformed into job-group from {socRequest.Uri}",
+                    EventType = EventTypeForDraft,
                 };
 
                 await context.CallActivityAsync(nameof(PostTransformationEventActivity), eventGridPostRequest).ConfigureAwait(true);
@@ -110,7 +97,7 @@ namespace DFC.Api.Lmi.Transformation.Functions
                 ItemId = socRequest.SocId,
                 Api = $"{eventGridClientOptions.ApiEndpoint}/{socRequest.SocId}",
                 DisplayText = $"LMI purged job-group for {socRequest.SocId}",
-                EventType = socRequest.IsDraftEnvironment ? EventTypeForDraftDiscarded : EventTypeForDeleted,
+                EventType = EventTypeForDraftDiscarded,
             };
 
             await context.CallActivityAsync(nameof(PostTransformationEventActivity), eventGridPostRequest).ConfigureAwait(true);
@@ -121,16 +108,14 @@ namespace DFC.Api.Lmi.Transformation.Functions
         {
             _ = context ?? throw new ArgumentNullException(nameof(context));
 
-            var socRequest = context.GetInput<SocRequestModel>();
-
             await context.CallActivityAsync(nameof(PurgeActivity), null).ConfigureAwait(true);
 
             var eventGridPostRequest = new EventGridPostRequestModel
             {
-                ItemId = Guid.NewGuid(),
+                ItemId = context.NewGuid(),
                 Api = $"{eventGridClientOptions.ApiEndpoint}",
                 DisplayText = "LMI purged all job-group ",
-                EventType = socRequest.IsDraftEnvironment ? EventTypeForDraftDiscarded : EventTypeForDeleted,
+                EventType = EventTypeForDraftDiscarded,
             };
 
             await context.CallActivityAsync(nameof(PostTransformationEventActivity), eventGridPostRequest).ConfigureAwait(true);
@@ -143,96 +128,102 @@ namespace DFC.Api.Lmi.Transformation.Functions
             _ = context ?? throw new ArgumentNullException(nameof(context));
 
             var socRequest = context.GetInput<SocRequestModel>();
-            var summaries = await context.CallActivityAsync<IList<SummaryItem>?>(nameof(GetGraphSummaryItemsActivity), null).ConfigureAwait(true);
+            var summaryItems = await context.CallActivityAsync<IList<SocDatasetSummaryItemModel>?>(nameof(GetSummaryItemsActivity), socRequest.Uri).ConfigureAwait(true);
 
-            if (summaries != null && summaries.Any())
+            if (summaryItems != null && summaryItems.Any())
             {
                 await context.CallActivityAsync(nameof(PurgeActivity), null).ConfigureAwait(true);
 
-                logger.LogInformation($"transforming {summaries.Count} LMI Graph items");
+                logger.LogInformation($"Transforming {summaryItems.Count} LMI data items");
 
                 var parallelTasks = new List<Task<HttpStatusCode>>();
 
-                foreach (var summaryItem in summaries.OrderBy(o => o.Soc))
+                foreach (var summaryItem in summaryItems.OrderBy(o => o.Soc))
                 {
-                    parallelTasks.Add(context.CallActivityAsync<HttpStatusCode>(nameof(TransformItemActivity), summaryItem.Url));
+                    var uri = new Uri($"{socRequest.Uri}/{summaryItem.Id}", UriKind.Absolute);
+                    parallelTasks.Add(context.CallActivityAsync<HttpStatusCode>(nameof(TransformItemActivity), uri));
                 }
 
                 await Task.WhenAll(parallelTasks).ConfigureAwait(true);
 
                 var eventGridPostRequest = new EventGridPostRequestModel
                 {
-                    ItemId = Guid.NewGuid(),
+                    ItemId = context.NewGuid(),
                     Api = $"{eventGridClientOptions.ApiEndpoint}",
-                    DisplayText = $"LMI transformed all job-groups from {socRequest.Url}",
-                    EventType = socRequest.IsDraftEnvironment ? EventTypeForDraft : EventTypeForPublished,
+                    DisplayText = $"LMI transformed all job-groups from {socRequest.Uri}",
+                    EventType = EventTypeForDraft,
                 };
 
                 await context.CallActivityAsync(nameof(PostTransformationEventActivity), eventGridPostRequest).ConfigureAwait(true);
 
                 int transformedToJobGroupCount = parallelTasks.Count(t => t.Result == HttpStatusCode.OK || t.Result == HttpStatusCode.Created);
 
-                logger.LogInformation($"Transformed to Job-group {transformedToJobGroupCount} of {summaries.Count} Graph SOCs");
+                logger.LogInformation($"Transformed to Job-group {transformedToJobGroupCount} of {summaryItems.Count} SOCs");
             }
             else
             {
-                logger.LogWarning("No data available LMI Graph - no data transformed");
+                logger.LogWarning("No data available LMI Import data - no data transformed");
             }
         }
 
-        [FunctionName(nameof(GetGraphSummaryItemsActivity))]
-        public async Task<IList<SummaryItem>?> GetGraphSummaryItemsActivity([ActivityTrigger] string? name)
+        [FunctionName(nameof(GetSummaryItemsActivity))]
+        public Task<IList<SocDatasetSummaryItemModel>?> GetSummaryItemsActivity([ActivityTrigger] Uri uri)
         {
-            logger.LogInformation("Getting LMI Graph summaries");
+            logger.LogInformation($"Getting LMI SOC dataset summaries from {uri}");
 
-            return await cmsApiService.GetSummaryAsync<SummaryItem>().ConfigureAwait(false);
+            return lmiImportApiConnector.GetSummaryAsync(uri);
         }
 
         [FunctionName(nameof(PurgeActivity))]
-        public async Task<bool> PurgeActivity([ActivityTrigger] string? name)
+        public Task<bool> PurgeActivity([ActivityTrigger] string? name)
         {
-            logger.LogInformation("Deleting all Job Groups");
+            logger.LogInformation("Deleting all SOC datasets");
 
-            return await jobGroupDocumentService.PurgeAsync().ConfigureAwait(false);
+            return jobGroupDocumentService.PurgeAsync();
         }
 
         [FunctionName(nameof(PurgeSocActivity))]
-        public async Task<bool> PurgeSocActivity([ActivityTrigger] Guid socId)
+        public Task<bool> PurgeSocActivity([ActivityTrigger] Guid socId)
         {
-            logger.LogInformation($"Deleting Job Groups item: {socId}");
+            logger.LogInformation($"Deleting SOC datasets item: {socId}");
 
-            return await jobGroupDocumentService.DeleteAsync(socId).ConfigureAwait(false);
+            return jobGroupDocumentService.DeleteAsync(socId);
         }
 
         [FunctionName(nameof(TransformItemActivity))]
         [Timeout("01:00:00")]
-        public async Task<HttpStatusCode> TransformItemActivity([ActivityTrigger] Uri? url)
+        public async Task<HttpStatusCode> TransformItemActivity([ActivityTrigger] Uri uri)
         {
-            _ = url ?? throw new ArgumentNullException(nameof(url));
+            logger.LogInformation($"Loading SOC dataset item: {uri}");
+            var lmiSoc = await lmiImportApiConnector.GetDetailAsync(uri).ConfigureAwait(false);
 
-            logger.LogInformation($"Loading Job Group item: {url}");
-            var lmiSoc = await cmsApiService.GetItemAsync<LmiSoc>(url).ConfigureAwait(false);
-
-            logger.LogInformation($"Transforming Job Group item for {url} to cache");
-            var jobGroup = mapper.Map<JobGroupModel>(lmiSoc);
-
-            if (jobGroup != null)
+            if (lmiSoc != null)
             {
-                var existingJobGroup = await jobGroupDocumentService.GetAsync(w => w.Soc == jobGroup.Soc, jobGroup.Soc.ToString(CultureInfo.InvariantCulture)).ConfigureAwait(false);
-                if (existingJobGroup != null)
-                {
-                    jobGroup.Etag = existingJobGroup.Etag;
-                }
+                lmiSoc.QualificationLevel.SetMeasures();
+                lmiSoc.EmploymentByRegion.SetMeasures();
+                lmiSoc.TopIndustriesInJobGroup.SetMeasures();
 
-                logger.LogInformation($"Upserting Job Groups item: {jobGroup.Soc} / {url}");
-                return await jobGroupDocumentService.UpsertAsync(jobGroup).ConfigureAwait(false);
+                logger.LogInformation($"Transforming SOC dataset item for {uri} to cache");
+                var jobGroup = mapper.Map<JobGroupModel>(lmiSoc);
+
+                if (jobGroup != null)
+                {
+                    var existingJobGroup = await jobGroupDocumentService.GetAsync(w => w.Soc == jobGroup.Soc, jobGroup.Soc.ToString(CultureInfo.InvariantCulture)).ConfigureAwait(false);
+                    if (existingJobGroup != null)
+                    {
+                        jobGroup.Etag = existingJobGroup.Etag;
+                    }
+
+                    logger.LogInformation($"Upserting SOC datasets item: {jobGroup.Soc}");
+                    return await jobGroupDocumentService.UpsertAsync(jobGroup).ConfigureAwait(false);
+                }
             }
 
             return HttpStatusCode.BadRequest;
         }
 
         [FunctionName(nameof(PostTransformationEventActivity))]
-        public async Task PostTransformationEventActivity([ActivityTrigger] EventGridPostRequestModel? eventGridPostRequest)
+        public Task PostTransformationEventActivity([ActivityTrigger] EventGridPostRequestModel? eventGridPostRequest)
         {
             _ = eventGridPostRequest ?? throw new ArgumentNullException(nameof(eventGridPostRequest));
 
@@ -247,7 +238,7 @@ namespace DFC.Api.Lmi.Transformation.Functions
                 Author = eventGridClientOptions.SubjectPrefix,
             };
 
-            await eventGridService.SendEventAsync(eventGridEventData, eventGridClientOptions.SubjectPrefix, eventGridPostRequest.EventType).ConfigureAwait(false);
+            return eventGridService.SendEventAsync(eventGridEventData, eventGridClientOptions.SubjectPrefix, eventGridPostRequest.EventType);
         }
     }
 }

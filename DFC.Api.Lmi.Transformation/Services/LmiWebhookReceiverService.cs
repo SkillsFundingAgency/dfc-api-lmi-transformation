@@ -16,9 +16,7 @@ namespace DFC.Api.Lmi.Transformation.Services
     {
         private readonly Dictionary<string, WebhookCacheOperation> acceptedEventTypes = new Dictionary<string, WebhookCacheOperation>
         {
-            { "draft", WebhookCacheOperation.CreateOrUpdate },
             { "published", WebhookCacheOperation.CreateOrUpdate },
-            { "draft-discarded", WebhookCacheOperation.Delete },
             { "unpublished", WebhookCacheOperation.Delete },
             { "deleted", WebhookCacheOperation.Delete },
         };
@@ -34,14 +32,14 @@ namespace DFC.Api.Lmi.Transformation.Services
         {
             if (!string.IsNullOrWhiteSpace(apiEndpoint))
             {
-                if (apiEndpoint.EndsWith($"/{Constants.ApiForJobGroups}", StringComparison.OrdinalIgnoreCase))
+                if (apiEndpoint.EndsWith(Constants.ApiForLmiData, StringComparison.OrdinalIgnoreCase))
                 {
-                    return MessageContentType.JobGroup;
+                    return MessageContentType.LmiSocSummary;
                 }
 
-                if (apiEndpoint.Contains($"/{Constants.ApiForJobGroups}/", StringComparison.OrdinalIgnoreCase))
+                if (apiEndpoint.Contains($"{Constants.ApiForLmiData}/", StringComparison.OrdinalIgnoreCase))
                 {
-                    return MessageContentType.JobGroupItem;
+                    return MessageContentType.LmiSocItem;
                 }
             }
 
@@ -55,9 +53,9 @@ namespace DFC.Api.Lmi.Transformation.Services
                 case WebhookCacheOperation.CreateOrUpdate:
                     switch (messageContentType)
                     {
-                        case MessageContentType.JobGroup:
+                        case MessageContentType.LmiSocSummary:
                             return WebhookCommand.TransformAllSocToJobGroup;
-                        case MessageContentType.JobGroupItem:
+                        case MessageContentType.LmiSocItem:
                             return WebhookCommand.TransformSocToJobGroup;
                     }
 
@@ -65,9 +63,9 @@ namespace DFC.Api.Lmi.Transformation.Services
                 case WebhookCacheOperation.Delete:
                     switch (messageContentType)
                     {
-                        case MessageContentType.JobGroup:
+                        case MessageContentType.LmiSocSummary:
                             return WebhookCommand.PurgeAllJobGroups;
-                        case MessageContentType.JobGroupItem:
+                        case MessageContentType.LmiSocItem:
                             return WebhookCommand.PurgeJobGroup;
                     }
 
