@@ -6,9 +6,6 @@ namespace DFC.Api.Lmi.Transformation.Models.JobGroupModels
     [ExcludeFromCodeCoverage]
     public class BreakdownYearValueModel
     {
-        [JsonIgnore]
-        public string? Measure { get; set; }
-
         public int Code { get; set; }
 
         public string? Name { get; set; }
