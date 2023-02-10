@@ -59,7 +59,6 @@ stages:
         SolutionBaseName: $(SolutionBaseName)
         BuildPlatform: $(BuildPlatform)
         BuildConfiguration: $(BuildConfiguration)
-        DotNetCoreVersion: '3.1.100'
 
 - stage: DeployToLabLmiTransformation
   condition: and(succeeded(), eq(variables['Build.SourceBranch'], 'refs/heads/dev'))
