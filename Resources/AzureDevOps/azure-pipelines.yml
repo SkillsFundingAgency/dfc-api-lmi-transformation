@@ -62,7 +62,7 @@ stages:
 
 - stage: DeployToLabLmiTransformation
   condition: and(succeeded(), eq(variables['Build.SourceBranch'], 'refs/heads/dev'))
-  displayName: Deploy to LAB_LMI_TRANSFORMATIONS
+  displayName: Deploy to LAB-LMI_TRANSFORMATIONS
   variables:
   - group: dfc-shared-all
   - group: dfc-shared-lab
@@ -84,7 +84,7 @@ stages:
       DfCDevopsPath: '$(Agent.BuildDirectory)/s/dfc-devops'
       PackageFile:  "$(Pipeline.Workspace)/${{ variables.SolutionBaseName }}.DeploymentPackages/${{ variables.SolutionBaseName }}.zip"
       ArmTemplateFolder: "$(Pipeline.Workspace)/${{ variables.SolutionBaseName }}.Resources.ArmTemplates/"
-      EnvironmentName: LAB_LMI_TRANSFORMATIONS
+      EnvironmentName: LAB-LMI_TRANSFORMATIONS
       AppSharedResourceGroup: $(AppSharedResourceGroup)
       appSharedCosmosDBName: $(appSharedCosmosDBName)
       AppServiceName: '$(FunctionAppName)'
