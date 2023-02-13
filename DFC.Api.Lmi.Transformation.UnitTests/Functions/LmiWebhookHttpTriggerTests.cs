@@ -4,7 +4,7 @@ using DFC.Api.Lmi.Transformation.Functions;
 using DFC.Api.Lmi.Transformation.Models.FunctionRequestModels;
 using FakeItEasy;
 using Microsoft.AspNetCore.Http;
-using Microsoft.AspNetCore.Http.Internal;
+
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.Azure.WebJobs.Extensions.DurableTask;
 using Microsoft.Extensions.Logging;
@@ -143,10 +143,15 @@ namespace DFC.Api.Lmi.Transformation.UnitTests.Functions
 
         private static HttpRequest BuildRequestWithValidBody(string bodyString)
         {
-            return new DefaultHttpRequest(new DefaultHttpContext())
+            var context = new DefaultHttpContext
             {
-                Body = new MemoryStream(Encoding.UTF8.GetBytes(bodyString)),
+                Request =
+                {
+                    Body = new MemoryStream(Encoding.UTF8.GetBytes(bodyString)),
+                },
             };
+
+            return context.Request;
         }
     }
 }
