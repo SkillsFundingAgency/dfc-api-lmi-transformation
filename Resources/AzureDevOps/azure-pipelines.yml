@@ -194,7 +194,7 @@ stages:
           - azureFunctionName: '${{ variables.FunctionAppName }}'
 
 - stage: DeployToPPLmiTransformation
-  condition: and(eq(dependencies.Build.result,'Succeeded'), eq(variables['Build.SourceBranch'], 'refs/heads/master'))
+  condition: succeeded()
   displayName: Deploy to PP_LMI_TRANSFORMATIONS
   variables:
   - group: dfc-shared-all
@@ -238,7 +238,7 @@ stages:
           - azureFunctionName: '${{ variables.FunctionAppName }}'
 
 - stage: DeployToPRDLmiTransformation
-  condition: and(eq(dependencies.DeployToPPLmiTransformation.result,'Succeeded'), eq(variables['Build.SourceBranch'], 'refs/heads/master'))
+  condition: succeeded()
   displayName: Deploy to PRD_LMI_TRANSFORMATIONS
   variables:
   - group: dfc-shared-all
