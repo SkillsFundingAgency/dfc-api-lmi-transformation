@@ -94,6 +94,9 @@
       },
       "apimResourceGroup": {
           "value": "__SharedResourceGroupName__"
+      },
+      "appInsightsInstrumentationKey": {
+        "value": "__appInsightsInstrumentationKey__" 
       }
     }
   }
