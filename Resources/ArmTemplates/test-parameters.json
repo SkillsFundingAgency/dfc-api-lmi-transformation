@@ -85,6 +85,12 @@
       },
       "apimApiName": {
         "value": "api-name"
+      },
+      "workspaceName": {
+        "value": "aTestLogAnalyticsAccount"
+      },
+      "workspaceResourceGroup": {
+          "value": "aResourceGroup"
       }
     }
   }

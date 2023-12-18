@@ -94,6 +94,12 @@
       },
       "apimResourceGroup": {
           "value": "__SharedResourceGroupName__"
+      },
+      "workspaceName": {
+        "value": "__sharedLogAnalyticsWorkspace__"
+      },
+      "workspaceResourceGroup": {
+          "value": "__sharedLogAnalyticsResourceGroup__"
       }
     }
   }

@@ -102,6 +102,12 @@
     },
     "apimResourceGroup": {
       "type": "string"
+    },
+    "workspaceName": {
+      "type": "string"
+    },
+    "workspaceResourceGroup": {
+        "type": "string"
     }
   },
   "variables": {
@@ -135,6 +141,12 @@
           },
           "productDisplayName": {
             "value": "[parameters('apimProductName')]"
+          },
+          "workspaceName": {
+            "value": "[parameters('workspaceName')]"
+          },
+          "workspaceResourceGroup": {
+              "value": "[parameters('workspaceResourceGroup')]"
           }
         }
       }
@@ -242,6 +254,12 @@
           },
           "attachedService": {
             "value": ""
+          },
+          "workspaceName": {
+            "value": "[parameters('workspaceName')]"
+          },
+          "workspaceResourceGroup": {
+              "value": "[parameters('workspaceResourceGroup')]"
           }
         }
       }
