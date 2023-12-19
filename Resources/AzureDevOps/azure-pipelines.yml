@@ -19,15 +19,15 @@ pool:
   - msbuild
   - visualstudio
 
-trigger: 
+trigger:
   branches:
-    include: 
+    include:
     - dev
     - master
 
 pr:
   branches:
-    include: 
+    include:
     - dev
     - master
 
@@ -72,7 +72,7 @@ stages:
   - group: dfc-stax-shared-lab
   - group: dfc-compositeui-all
   - template: VariableTemplates\LabEnvironmentVariables.yml
-  
+
   jobs:
   - template: JobTemplates/deploy-environment.yml
     parameters:
@@ -106,7 +106,7 @@ stages:
 
 - stage: DeployToDevLmiTransformation
   dependsOn: Build
-  condition: succeeded()
+  condition: and(succeeded(), ne(variables['Build.Reason'], 'PullRequest'))
   displayName: Deploy to DEV_LMI_TRANSFORMATIONS
   variables:
   - group: dfc-shared-all
@@ -117,7 +117,7 @@ stages:
   - group: dfc-stax-shared-dev
   - group: dfc-compositeui-all
   - template: VariableTemplates\DevEnvironmentVariables.yml
-  
+
   jobs:
   - template: JobTemplates/deploy-environment.yml
     parameters:
@@ -150,7 +150,7 @@ stages:
           - azureFunctionName: '${{ variables.FunctionAppName }}'
 
 - stage: DeployToSitLmiTransformation
-  condition: succeeded()
+  condition: and(succeeded(), ne(variables['Build.Reason'], 'PullRequest'))
   displayName: Deploy to SIT_LMI_TRANSFORMATIONS
   variables:
   - group: dfc-shared-all
@@ -161,7 +161,7 @@ stages:
   - group: dfc-stax-shared-sit
   - group: dfc-compositeui-all
   - template: VariableTemplates\SitEnvironmentVariables.yml
-  
+
   jobs:
   - template: JobTemplates/deploy-environment.yml
     parameters:
@@ -194,7 +194,7 @@ stages:
           - azureFunctionName: '${{ variables.FunctionAppName }}'
 
 - stage: DeployToPPLmiTransformation
-  condition: succeeded()
+  condition: and(succeeded(), ne(variables['Build.Reason'], 'PullRequest'))
   displayName: Deploy to PP_LMI_TRANSFORMATIONS
   variables:
   - group: dfc-shared-all
@@ -205,7 +205,7 @@ stages:
   - group: dfc-stax-shared-pp
   - group: dfc-compositeui-all
   - template: VariableTemplates\PPEnvironmentVariables.yml
-  
+
   jobs:
   - template: JobTemplates/deploy-environment.yml
     parameters:
@@ -238,7 +238,7 @@ stages:
           - azureFunctionName: '${{ variables.FunctionAppName }}'
 
 - stage: DeployToPRDLmiTransformation
-  condition: succeeded()
+  condition: and(succeeded(), ne(variables['Build.Reason'], 'PullRequest'))
   displayName: Deploy to PRD_LMI_TRANSFORMATIONS
   variables:
   - group: dfc-shared-all
@@ -249,7 +249,7 @@ stages:
   - group: dfc-stax-shared-prd
   - group: dfc-compositeui-all
   - template: VariableTemplates\PRDEnvironmentVariables.yml
-  
+
   jobs:
   - template: JobTemplates/deploy-environment.yml
     parameters:
