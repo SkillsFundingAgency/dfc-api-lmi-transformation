@@ -2,17 +2,14 @@
     "$schema": "http://schema.management.azure.com/schemas/2015-01-01/deploymentParameters.json#",
     "contentVersion": "1.0.0.0",
     "parameters": {
+      "FunctionAppName": {
+        "value": "some-function-app"
+      },
       "appSharedResourceGroup": {
         "value": "dfc-dev-app-sharedresources-rg"
       },
-      "aspTier": {
-        "value": "Standard"
-      },
-      "aspSize": {
-        "value": "2"
-      },
-      "aspInstances": {
-        "value": 2
+      "appServicePlanSuffix": {
+        "value": "-migrated"
       },
       "ApimLmiKey": {
         "value": "123456789"
@@ -45,12 +42,6 @@
         "value": "dfcdevappsharedstr"
       },
       "ExceptionCountThreshold": {
-          "value": "0"
-      },
-      "MemoryPercentageThreshold": {
-          "value": "0"
-      },
-      "CPUPercentageThreshold": {
           "value": "0"
       },
       "SubscriptionSettingsEndpoint": {
