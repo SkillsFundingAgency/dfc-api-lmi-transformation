@@ -3,22 +3,14 @@ variables:
   value: PP
 - name: WebAppPrefix
   value: dfc-pp-api-lmi-transformation
+- name: AppServicePlanSuffix
+  value: -migrated
 - name: ResourceGroup
   value: $(WebAppPrefix)-rg
-- name: aspTier
-  value: Standard
-- name: aspInstances
-  value: 2
-- name: aspSize
-  value: 1
 - name: lmiTransformationAppDatabaseThroughput
   value: 1200
 - name: ExceptionCountThreshold
   value: 10
-- name: MemoryPercentageThreshold
-  value: 75
-- name: CPUPercentageThreshold
-  value: 75
 - name: EnableAzureMonitorAlerting
   value: true
 - name: cosmosJobGroupDbCollectionName
@@ -28,13 +20,13 @@ variables:
 - name: SubscriptionSettingsEndpoint
   value: $(ApimProxyAddress)/LMI/Transformation/lmi/webhook?subscription-key=$(apimLmiKey)
 - name: subscriptionUrl
-  value: https://dfc-pp-api-eventgridsubscriptions-fa.$(FunctionAppDomain)/api/execute/
+  value: https://dfc-pp-api-eventgridsubscriptions-fa-ver2.$(FunctionAppDomain)/api/execute/
 - name: EventGridPublishClientOptionsApiEndpoint
   value: https://$(FunctionAppName).$(FunctionAppDomain)/job-groups
 - name: EventGridSubjectPrefix
   value: /$(ApplicationName)/
 - name: FunctionAppName
-  value: $(WebAppPrefix)-fa
+  value: $(WebAppPrefix)-fa-ver2
 - name: ApplicationName
   value: dfc-api-lmi-transformation
 - name: apimLoggerName
