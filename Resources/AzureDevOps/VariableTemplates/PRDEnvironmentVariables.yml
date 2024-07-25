@@ -3,6 +3,8 @@ variables:
   value: PRD
 - name: WebAppPrefix
   value: dfc-prd-api-lmi-transformation
+- name: AppServicePlanSuffix
+  value: -migrated
 - name: ResourceGroup
   value: $(WebAppPrefix)-rg
 - name: lmiTransformationAppDatabaseThroughput
@@ -18,13 +20,13 @@ variables:
 - name: SubscriptionSettingsEndpoint
   value: $(ApimProxyAddress)/LMI/Transformation/lmi/webhook?subscription-key=$(apimLmiKey)
 - name: subscriptionUrl
-  value: https://dfc-prd-api-eventgridsubscriptions-fa.$(FunctionAppDomain)/api/execute/
+  value: https://dfc-prd-api-eventgridsubscriptions-fa-ver2.$(FunctionAppDomain)/api/execute/
 - name: EventGridPublishClientOptionsApiEndpoint
   value: https://$(FunctionAppName).$(FunctionAppDomain)/job-groups
 - name: EventGridSubjectPrefix
   value: /$(ApplicationName)/
 - name: FunctionAppName
-  value: $(WebAppPrefix)-fa
+  value: $(WebAppPrefix)-fa-ver2
 - name: ApplicationName
   value: dfc-api-lmi-transformation
 - name: apimLoggerName
